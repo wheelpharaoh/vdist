@@ -7,8 +7,24 @@ import threading
 
 from jinja2 import Environment, FileSystemLoader
 
-from vdist import defaults
+import vdist.defaults as defaults
 from vdist.buildmachine import BuildMachine
+
+
+def build_package(_configuration):
+    _create_package(_configuration)
+    _move_package_to_output_folder(_configuration)
+
+
+def _create_package(_configuration):
+    builder = Builder()
+    builder.add_build(**_configuration.builder_parameters)
+    builder.build()
+
+
+def _move_package_to_output_folder(_configuration,
+                                   source_folder=defaults.BUILD_BASEDIR):
+    pass
 
 
 class BuildProfile(object):
