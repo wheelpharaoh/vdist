@@ -16,5 +16,7 @@ class Configuration(object):
 
 
 def read(configuration_file):
+    # Should return a dict whose keys should be configfile sections
+    # (except DEFAULT) and values a dict with parameter:value pairs.
     pass
 
