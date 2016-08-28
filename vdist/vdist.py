@@ -7,7 +7,7 @@ import vdist.builder as builder
 
 def _get_build_configurations(arguments):
     if arguments["configuration_file"] is None:
-        configurations = {"default": configuration.Configuration(arguments), }
+        configurations = {"Default project": configuration.Configuration(arguments), }
     else:
         configurations = configuration.read(arguments["configuration_file"])
     return configurations

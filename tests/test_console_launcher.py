@@ -9,7 +9,7 @@ import vdist.builder as builder
 import vdist.console_parser as console_parser
 import vdist.configuration as configuration
 import vdist.source as source
-
+import vdist.vdist as vdist
 
 DUMMY_CONFIGURATION_TEXT = """[DEFAULT]
 app = geolocate
@@ -74,6 +74,27 @@ DUMMY_CONFIGURATION_ARGUMENTS["output_folder"] = DUMMY_OUTPUT_FOLDER
 DUMMY_CONFIGURATION = configuration.Configuration(DUMMY_CONFIGURATION_ARGUMENTS)
 CORRECT_OUTPUT_FOLDER = "./vdist"
 DUMMY_CONFIGURATION_FILE_ARGUMENTS = ["vdist", "batch", "config.cfg"]
+DUMMY_MANUAL_ARGUMENTS = ["vdist", "manual",
+                          "--app", "geolocate",
+                          "--version", "1.3.0",
+                          "--source", "https://github.com/dante-signal31/geolocate,master",
+                          "--profile", "ubuntu-trusty",
+                          "--compile_python",
+                          "--python_version", "3.4.4",
+                          "--fpm_args", '--maintainer dante.signal31@gmail.com -a native --url '
+                                        'https://github.com/dante-signal31/geolocate --description '
+                                        '"This program accepts any text and searchs inside every IP'
+                                        ' address. With each of those IP addresses, '
+                                        'geolocate queries '
+                                        'Maxmind GeoIP database to look for the city and '
+                                        'country where'
+                                        ' IP address or URL is located. Geolocate is designed to be'
+                                        ' used in console with pipes and redirections along with '
+                                        'applications like traceroute, nslookup, etc.'
+                                        ' " --license BSD-3 --category net',
+                          "--requirements_path", "/REQUIREMENTS.txt",
+                          "--runtime_deps", "libssl1.0.0, dummy1.0.0",
+                          "--output_folder", DUMMY_OUTPUT_FOLDER]
 
 
 @contextlib.contextmanager
@@ -103,10 +124,20 @@ def test_move_package_to_output_folder():
                                            dummy_package))
 
 
-def test_build_package():
+def test_build_package_batch():
     with _create_dummy_configuration_file(DUMMY_CONFIGURATION_TEXT) as config_file:
         configurations = configuration.read(config_file)
         builder.build_package(configurations[0])
         correct_output_package = os.path.join(configurations[0].output_folder,
                                               ".".join(DUMMY_PACKAGE_NAME, "deb"))
         assert os.path.isfile(correct_output_package)
+
+
+def test_build_package_manual():
+    console_arguments = console_parser.parse_arguments(DUMMY_MANUAL_ARGUMENTS)
+    configurations = vdist._get_build_configurations(console_arguments)
+    for _configuration in configurations:
+        builder.build_package(configurations[_configuration])
+    correct_output_package = os.path.join(configurations[0].output_folder,
+                                          ".".join(DUMMY_PACKAGE_NAME, "deb"))
+    assert os.path.isfile(correct_output_package)
