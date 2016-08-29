@@ -68,7 +68,8 @@ CORRECT_UBUNTU_PARAMETERS = {
     }
 
 DUMMY_PACKAGE_NAME = "geolocate-1.3.0-ubuntu-trusty"
-DUMMY_OUTPUT_FOLDER = "/tmp"
+DUMMY_PACKAGE_EXTENSION = ".deb"
+DUMMY_OUTPUT_FOLDER = "/tmp/vdist"
 DUMMY_CONFIGURATION_ARGUMENTS = CORRECT_UBUNTU_PARAMETERS
 DUMMY_CONFIGURATION_ARGUMENTS["output_folder"] = DUMMY_OUTPUT_FOLDER
 DUMMY_CONFIGURATION = configuration.Configuration(DUMMY_CONFIGURATION_ARGUMENTS)
@@ -118,10 +119,16 @@ def test_parse_arguments_configuration_file():
 
 
 def test_move_package_to_output_folder():
-    with tempfile.NamedTemporaryFile(prefix=DUMMY_PACKAGE_NAME) as dummy_package:
-        builder._move_package_to_output_folder(DUMMY_CONFIGURATION)
-        assert os.path.isfile(os.path.join(DUMMY_OUTPUT_FOLDER,
-                                           dummy_package))
+    with tempfile.TemporaryDirectory() as tempdir:
+        with tempfile.NamedTemporaryFile(prefix=DUMMY_PACKAGE_NAME,
+                                         suffix=DUMMY_PACKAGE_EXTENSION,
+                                         dir=tempdir) as dummy_package:
+            dummy_source_folder, dummy_package_name = os.path.split(dummy_package.name)
+            builder._move_package_to_output_folder(DUMMY_CONFIGURATION,
+                                                   source_folder=dummy_source_folder)
+            correct_package = os.path.join(DUMMY_OUTPUT_FOLDER,
+                                           dummy_package_name)
+            assert os.path.isfile(correct_package)
 
 
 def test_build_package_batch():

@@ -24,7 +24,14 @@ def _create_package(_configuration):
 
 def _move_package_to_output_folder(_configuration,
                                    source_folder=defaults.BUILD_BASEDIR):
-    pass
+    if not os.path.exists(_configuration.output_folder):
+        os.makedirs(_configuration.output_folder, exist_ok=True)
+    for file in os.listdir(source_folder):
+        # Only copy files with extension as they are likely the generated
+        # package.
+        if os.path.splitext(file)[1] != "":
+            file_pathname = os.path.join(source_folder, file)
+            shutil.copy(file_pathname, _configuration.output_folder)
 
 
 class BuildProfile(object):
