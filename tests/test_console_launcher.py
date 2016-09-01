@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import os.path
 import tempfile
 
@@ -14,7 +15,7 @@ import vdist.vdist as vdist
 DUMMY_CONFIGURATION_TEXT = """[DEFAULT]
 app = geolocate
 version = 1.3.0
-source = https://github.com/dante-signal31/${app} , master
+source_git = https://github.com/dante-signal31/${app}, master
 fpm_args = --maintainer dante.signal31@gmail.com -a native --url
     https://github.com/dante-signal31/${app} --description
     "This program accepts any text and searchs inside every IP
@@ -27,7 +28,7 @@ fpm_args = --maintainer dante.signal31@gmail.com -a native --url
     applications like traceroute, nslookup, etc."
     --license BSD-3 --category net
 requirements_path = /REQUIREMENTS.txt
-runtime_deps = libssl1.0.0 , dummy1.0.0
+runtime_deps = libssl1.0.0, dummy1.0.0
 compile_python = True
 python_version = 3.4.4
 output_folder = ./vdist
@@ -41,6 +42,31 @@ profile = centos6
 [Centos7-package]
 profile = centos
 """
+
+DUMMY_OUTPUT_FOLDER = "/tmp/vdist"
+
+UBUNTU_ARGPARSED_ARGUMENTS = {
+        "app": 'geolocate',
+        "version": '1.3.0',
+        "source": "https://github.com/dante-signal31/geolocate, master",
+        "profile": 'ubuntu-trusty',
+        "compile_python": "True",
+        "python_version": '3.4.4',
+        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
+                    'https://github.com/dante-signal31/geolocate --description '
+                    '"This program accepts any text and searchs inside every IP'
+                    ' address. With each of those IP addresses, '
+                    'geolocate queries '
+                    'Maxmind GeoIP database to look for the city and '
+                    'country where'
+                    ' IP address or URL is located. Geolocate is designed to be'
+                    ' used in console with pipes and redirections along with '
+                    'applications like traceroute, nslookup, etc."'
+                    ' --license BSD-3 --category net',
+        "requirements_path": '/REQUIREMENTS.txt',
+        "runtime_deps": "libssl1.0.0, dummy1.0.0",
+        "output_folder": DUMMY_OUTPUT_FOLDER
+}
 
 CORRECT_UBUNTU_PARAMETERS = {
         "app": 'geolocate',
@@ -61,24 +87,23 @@ CORRECT_UBUNTU_PARAMETERS = {
                     'country where'
                     ' IP address or URL is located. Geolocate is designed to be'
                     ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc.'
-                    ' " --license BSD-3 --category net',
+                    'applications like traceroute, nslookup, etc."'
+                    ' --license BSD-3 --category net',
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", "dummy1.0.0"]
     }
 
 DUMMY_PACKAGE_NAME = "geolocate-1.3.0-ubuntu-trusty"
 DUMMY_PACKAGE_EXTENSION = ".deb"
-DUMMY_OUTPUT_FOLDER = "/tmp/vdist"
-DUMMY_CONFIGURATION_ARGUMENTS = CORRECT_UBUNTU_PARAMETERS
+DUMMY_CONFIGURATION_ARGUMENTS = copy.deepcopy(CORRECT_UBUNTU_PARAMETERS)
 DUMMY_CONFIGURATION_ARGUMENTS["output_folder"] = DUMMY_OUTPUT_FOLDER
-DUMMY_CONFIGURATION = configuration.Configuration(DUMMY_CONFIGURATION_ARGUMENTS)
+DUMMY_CONFIGURATION = configuration.Configuration(UBUNTU_ARGPARSED_ARGUMENTS)
 CORRECT_OUTPUT_FOLDER = "./vdist"
 DUMMY_CONFIGURATION_FILE_ARGUMENTS = ["vdist", "batch", "config.cfg"]
 DUMMY_MANUAL_ARGUMENTS = ["vdist", "manual",
                           "--app", "geolocate",
                           "--version", "1.3.0",
-                          "--source", "https://github.com/dante-signal31/geolocate,master",
+                          "--source-git", "https://github.com/dante-signal31/geolocate,master",
                           "--profile", "ubuntu-trusty",
                           "--compile_python",
                           "--python_version", "3.4.4",
@@ -91,8 +116,8 @@ DUMMY_MANUAL_ARGUMENTS = ["vdist", "manual",
                                         'country where'
                                         ' IP address or URL is located. Geolocate is designed to be'
                                         ' used in console with pipes and redirections along with '
-                                        'applications like traceroute, nslookup, etc.'
-                                        ' " --license BSD-3 --category net',
+                                        'applications like traceroute, nslookup, etc."'
+                                        ' --license BSD-3 --category net',
                           "--requirements_path", "/REQUIREMENTS.txt",
                           "--runtime_deps", "libssl1.0.0, dummy1.0.0",
                           "--output_folder", DUMMY_OUTPUT_FOLDER]
@@ -100,16 +125,18 @@ DUMMY_MANUAL_ARGUMENTS = ["vdist", "manual",
 
 @contextlib.contextmanager
 def _create_dummy_configuration_file(configuration_text):
-    with tempfile.NamedTemporaryFile(mode="w") as temporary_file:
-        temporary_file.write(configuration_text)
+    with tempfile.NamedTemporaryFile(mode="wb") as temporary_file:
+        temporary_file.write(configuration_text.encode("UTF-8"))
+        temporary_file.flush()
         yield temporary_file
 
 
 def test_configuration_file_read():
     with _create_dummy_configuration_file(DUMMY_CONFIGURATION_TEXT) as config_file:
-        configurations = configuration.read(config_file)
-        assert configurations["Ubuntu-package"].builder_parameters == CORRECT_UBUNTU_PARAMETERS
-        assert configurations["Ubuntu-package"].output_folder == CORRECT_OUTPUT_FOLDER
+        configurations = configuration.read(config_file.name)
+        ubuntu_configuration = configuration.Configuration(configurations["Ubuntu-package"])
+        assert ubuntu_configuration.builder_parameters == CORRECT_UBUNTU_PARAMETERS
+        assert ubuntu_configuration.output_folder == CORRECT_OUTPUT_FOLDER
         assert "Centos7-package" in configurations
 
 
