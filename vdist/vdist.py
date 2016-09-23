@@ -1,19 +1,23 @@
+#!/usr/bin/env python
 import sys
 
-import vdist.console_parser as console_parser
-import vdist.configuration as configuration
-import vdist.builder as builder
+import console_parser
+import configuration
+import builder
 
 
 def _get_build_configurations(arguments):
-    if arguments["configuration_file"] is None:
-        configurations = {"Default project": configuration.Configuration(arguments), }
-    else:
-        configurations = configuration.read(arguments["configuration_file"])
+    try:
+        if arguments["configuration_file"] is None:
+            configurations = {"Default project": arguments, }
+        else:
+            configurations = configuration.read(arguments["configuration_file"])
+    except KeyError:
+        configurations = {"Default project": arguments, }
     return configurations
 
 
-def main(args=sys.argv):
+def main(args=sys.argv[1:]):
     console_arguments = console_parser.parse_arguments(args)
     configurations = _get_build_configurations(console_arguments)
     for _configuration in configurations:

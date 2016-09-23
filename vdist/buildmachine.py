@@ -3,8 +3,7 @@ import logging
 import os
 import subprocess
 
-import vdist.defaults as defaults
-
+import defaults
 
 class BuildMachine(object):
 

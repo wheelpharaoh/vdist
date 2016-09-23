@@ -1,3 +1,4 @@
+import string
 import sys
 # The ConfigParser module has been renamed to configparser in Python 3
 if sys.version_info[0] == 3:
@@ -5,7 +6,7 @@ if sys.version_info[0] == 3:
 else:
     import ConfigParser as configparser
 
-import vdist.source as source
+import source
 
 LISTABLE_ARGUMENTS = {"source_git", "source_git_directory", "runtime_deps",
                       "build_deps"}
@@ -62,29 +63,50 @@ class Configuration(object):
                 self.builder_parameters[argument] = generated_list
 
 
-def _create_list(text):
-    return [element.strip() for element in text.split(",")]
+def _create_list(_list):
+    return _list if isinstance(_list, list) else [element.strip()
+                                                  for element in _list.split(",")]
 
 
 def _remove_cr(text):
     # Removes carriage returns from given text.
     # Great reference:
     #   http://stackoverflow.com/questions/3939361/remove-specific-characters-from-a-string-in-python
+    #   http://stackoverflow.com/questions/21038891/what-does-table-in-the-string-translate-function-mean
     if sys.version_info[0] == 3:
         return text.translate({ord('\n'): ord(' '), })
     else:
-        return text.translate(' ', '\n')
-
+        translation_table = string.maketrans('\n', ' ')
+        return text.translate(translation_table)
 
 
 def read(configuration_file):
     # Should return a dict whose keys should be configfile sections
     # (except DEFAULT) and values a dict with parameter:value pairs.
-    parser = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    parser = _get_config_parser()
     parser.read(configuration_file)
     configurations = {}
     for section in parser.sections():
-        configurations[section] = {key: parser[section][key]
-                                   for key in parser[section]}
+        configurations[section] = _get_section_values(parser, section)
     return configurations
+
+
+def _get_section_values(parser, section):
+    section_values = {}
+    if sys.version_info[0] == 3:
+        section_values = {key: parser[section][key]
+                          for key in parser[section]}
+    else:
+        section_values = {key: value
+                          for key, value in parser.items(section)}
+    return section_values
+
+
+def _get_config_parser():
+    if sys.version_info[0] == 3:
+        parser = configparser.ConfigParser(
+            interpolation=configparser.ExtendedInterpolation())
+    else:
+        parser = configparser.ConfigParser()
+    return parser
 

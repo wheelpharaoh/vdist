@@ -43,6 +43,8 @@ def _call_builder(builder_parameters):
 def _generate_rpm(builder_parameters, centos_version):
     _call_builder(builder_parameters)
     homedir = os.path.expanduser('~')
+    # TODO: Redundancy detected. Should refactor this and rerun integration
+    # tests.
     filename_prefix = "-".join([builder_parameters["app"],
                                 builder_parameters["version"]])
     rpm_filename_prefix = "-".join([builder_parameters["app"],
