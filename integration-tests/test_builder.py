@@ -1,4 +1,4 @@
-# TODO: Fix centos6 profile. All centos6 fail because a problem with
+# TODO: Fix centos6 profile. All centos6 fail because a problem
 # when installing FPM.
 # Full log of a failed tests with error about the end in:
 #   https://gist.github.com/dante-signal31/60b2a1b8952736e7c11989ca45895398#file-test_builder-py
@@ -48,18 +48,14 @@ def _call_builder(builder_parameters):
 def _generate_rpm(builder_parameters, centos_version):
     _call_builder(builder_parameters)
     homedir = os.path.expanduser('~')
-    # TODO: Redundancy detected. Should refactor this and rerun integration
-    # tests.
     filename_prefix = "-".join([builder_parameters["app"],
                                 builder_parameters["version"]])
-    rpm_filename_prefix = "-".join([builder_parameters["app"],
-                                    builder_parameters["version"]])
     target_file = os.path.join(
         homedir,
         '.vdist',
         'dist',
         "".join([filename_prefix, "-{0}".format(centos_version)]),
-        "".join([rpm_filename_prefix, '-1.x86_64.rpm']),
+        "".join([filename_prefix, '-1.x86_64.rpm']),
     )
     assert os.path.isfile(target_file)
     assert os.path.getsize(target_file) > 0

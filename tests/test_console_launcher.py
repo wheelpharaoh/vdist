@@ -4,51 +4,19 @@ import os.path
 import sys
 import tempfile
 
-if sys.version_info[0] != 3:
-    from testing_tools import TemporaryDirectory as OwnTemporaryDirectory
-
-# TODO: Something has to be wrong with my way os doing imports. If pytest is run
-# with python 3 all goes fine, but if I use python 2 all tests folder's tests
-# fail because ImportErrors (except test_sources.py).
 import vdist.builder as builder
 import vdist.console_parser as console_parser
 import vdist.configuration as configuration
 import vdist.source as source
 import vdist.vdist as vdist
 
+if sys.version_info[0] != 3:
+    from testing_tools import TemporaryDirectory as OwnTemporaryDirectory
+
 # Python 2.x ConfigParser lacks of extended interpolation support and its
 # tag format changes, so you should alter your config text depending whether
 # you are building with Python 3 or not.
 if sys.version_info[0] == 3:
-#     DUMMY_CONFIGURATION_TEXT = """[DEFAULT]
-# app = geolocate
-# version = 1.3.0
-# source_git = https://github.com/dante-signal31/${app}, master
-# fpm_args = --maintainer dante.signal31@gmail.com -a native --url
-#     https://github.com/dante-signal31/${app} --description
-#     "This program accepts any text and searchs inside every IP
-#     address. With each of those IP addresses,
-#     ${app} queries
-#     Maxmind GeoIP database to look for the city and
-#     country where
-#     IP address or URL is located. Geolocate is designed to be
-#     used in console with pipes and redirections along with
-#     applications like traceroute, nslookup, etc."
-#     --license BSD-3 --category net
-# requirements_path = /REQUIREMENTS.txt
-# runtime_deps = libssl1.0.0, dummy1.0.0
-# compile_python = True
-# python_version = 3.4.4
-# output_folder = ./vdist
-#
-# [Ubuntu-package]
-# profile = ubuntu-trusty
-#
-# [Centos7-package]
-# profile = centos7
-# """
-
-## TODO: Check if I can use the same format for fpm_args in Pyhton3 and Python 2.
     DUMMY_CONFIGURATION_TEXT = """[DEFAULT]
     app = geolocate
     version = 1.3.0
@@ -77,6 +45,9 @@ if sys.version_info[0] == 3:
     profile = centos7
     """
 else:
+    # Whereas Python 3's one, Python 2's configparser does not remove tabs
+    # beginning a line, so don't add a tab to this tab to fix indentation or
+    # tests will probably fail miserably.
     DUMMY_CONFIGURATION_TEXT = """[DEFAULT]
 app = geolocate
 version = 1.3.0
