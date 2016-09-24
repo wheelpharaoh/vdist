@@ -1,8 +1,3 @@
-# TODO: Fix centos6 profile. All centos6 fail because a problem
-# when installing FPM.
-# Full log of a failed tests with error about the end in:
-#   https://gist.github.com/dante-signal31/60b2a1b8952736e7c11989ca45895398#file-test_builder-py
-
 import os
 import re
 import subprocess
