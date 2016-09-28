@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import string
 import sys
 # The ConfigParser module has been renamed to configparser in Python 3
@@ -6,7 +8,7 @@ if sys.version_info[0] == 3:
 else:
     import ConfigParser as configparser
 
-import source
+import vdist.source as source
 
 LISTABLE_ARGUMENTS = {"source_git", "source_git_directory", "runtime_deps",
                       "build_deps"}

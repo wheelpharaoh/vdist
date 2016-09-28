@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+
 import sys
 
-import console_parser
-import configuration
-import builder
+import vdist.console_parser as console_parser
+import vdist.configuration as configuration
+import vdist.builder as builder
 
 
 def _get_build_configurations(arguments):

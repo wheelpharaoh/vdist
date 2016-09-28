@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import logging
 import os
 import shutil
@@ -8,8 +10,8 @@ import threading
 import sys
 from jinja2 import Environment, FileSystemLoader
 
-import defaults
-import buildmachine
+import vdist.defaults as defaults
+import vdist.buildmachine as buildmachine
 
 
 def build_package(_configuration):
