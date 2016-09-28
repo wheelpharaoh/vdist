@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+
+# Be aware vdist_launcher is designed to be run as an "entry_point", i.e you
+# are not supossed to execute python vdist_launcher.py but just vdist command
+# after installing vdist package. If you try to run vdist_launcher.py directly
+# you are going to get ImportError unless you add vdist main folder (the
+# one with setup.py) to PYTHONPATH.
+
 from __future__ import absolute_import
 
 import sys

@@ -13,7 +13,7 @@ setup(
     url='https://github.com/objectified/vdist',
     packages=find_packages(),
     install_requires=['jinja2==2.7.3'],
-    entry_points={'console_scripts': ['vdist=vdist.vdist:main', ], },
+    entry_points={'console_scripts': ['vdist=vdist.vdist_launcher:main', ], },
     package_data={'': ['internal_profiles.json', '*.sh']},
     tests_require=['pytest'],
     classifiers=[

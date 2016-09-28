@@ -8,7 +8,7 @@ import vdist.builder as builder
 import vdist.console_parser as console_parser
 import vdist.configuration as configuration
 import vdist.source as source
-import vdist.vdist as vdist
+import vdist.vdist_launcher as vdist_launcher
 
 if sys.version_info[0] != 3:
     from testing_tools import TemporaryDirectory as OwnTemporaryDirectory
@@ -214,7 +214,7 @@ def test_build_package_batch():
 
 def test_build_package_manual():
     console_arguments = console_parser.parse_arguments(DUMMY_MANUAL_ARGUMENTS)
-    configurations = vdist._get_build_configurations(console_arguments)
+    configurations = vdist_launcher._get_build_configurations(console_arguments)
     _generate_packages(configurations)
 
 
