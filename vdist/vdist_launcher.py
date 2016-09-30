@@ -18,11 +18,17 @@ import vdist.builder as builder
 def _get_build_configurations(arguments):
     try:
         if arguments["configuration_file"] is None:
-            configurations = {"Default project": arguments, }
+            configurations = _load_default_configuration(arguments)
         else:
             configurations = configuration.read(arguments["configuration_file"])
     except KeyError:
-        configurations = {"Default project": arguments, }
+        configurations = _load_default_configuration(arguments)
+    return configurations
+
+
+def _load_default_configuration(arguments):
+    _configuration = configuration.Configuration(arguments)
+    configurations = {"Default project": _configuration, }
     return configurations
 
 

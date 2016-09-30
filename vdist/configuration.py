@@ -84,12 +84,13 @@ def _remove_cr(text):
 
 def read(configuration_file):
     # Should return a dict whose keys should be configfile sections
-    # (except DEFAULT) and values a dict with parameter:value pairs.
+    # (except DEFAULT) and configurations objects as values.
     parser = _get_config_parser()
     parser.read(configuration_file)
     configurations = {}
     for section in parser.sections():
-        configurations[section] = _get_section_values(parser, section)
+        parameters = _get_section_values(parser, section)
+        configurations[section] = Configuration(parameters)
     return configurations
 
 
