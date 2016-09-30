@@ -18,7 +18,13 @@ def parse_arguments(args=None):
                                                      "contained manner.\n",
                                          epilog="Follow vdist development at: "
                                                 "<https://github.com/objectified/vdist>")
-    subparsers = arg_parser.add_subparsers(help="Available modes")
+    # There is a bug in Python 3.5 argparser that makes that missing arguments
+    # don't raise a "too few arguments". While that bug is finally fixed, there
+    # is a workaround in:
+    #   http://stackoverflow.com/questions/23349349/argparse-with-required-subparser
+    subparsers = arg_parser.add_subparsers(help="Available modes",
+                                           dest="mode")
+    subparsers.required = True
     automatic_subparser = subparsers.add_parser("batch",
                                                 help="Automatic configuration. "
                                                      "Parameters are going to "
