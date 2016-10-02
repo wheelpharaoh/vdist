@@ -79,52 +79,53 @@ profile = centos7
 DUMMY_OUTPUT_FOLDER = "/tmp/vdist"
 
 UBUNTU_ARGPARSED_ARGUMENTS = {
-        "app": 'geolocate',
-        "version": '1.3.0',
-        "source_git": "https://github.com/dante-signal31/geolocate, master",
-        "profile": 'ubuntu-trusty',
-        "compile_python": "True",
-        "python_version": '3.4.4',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside every IP'
-                    ' address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc."'
-                    ' --license BSD-3 --category net',
-        "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", "dummy1.0.0"],
-        "output_folder": DUMMY_OUTPUT_FOLDER
+    "mode": "manual",
+    "app": 'geolocate',
+    "version": '1.3.0',
+    "source_git": "https://github.com/dante-signal31/geolocate, master",
+    "profile": 'ubuntu-trusty',
+    "compile_python": "True",
+    "python_version": '3.4.4',
+    "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
+                'https://github.com/dante-signal31/geolocate --description '
+                '"This program accepts any text and searchs inside every IP'
+                ' address. With each of those IP addresses, '
+                'geolocate queries '
+                'Maxmind GeoIP database to look for the city and '
+                'country where'
+                ' IP address or URL is located. Geolocate is designed to be'
+                ' used in console with pipes and redirections along with '
+                'applications like traceroute, nslookup, etc."'
+                ' --license BSD-3 --category net',
+    "requirements_path": '/REQUIREMENTS.txt',
+    "runtime_deps": ["libssl1.0.0", "dummy1.0.0"],
+    "output_folder": DUMMY_OUTPUT_FOLDER
 }
 
 CORRECT_UBUNTU_PARAMETERS = {
-        "app": 'geolocate',
-        "version": '1.3.0',
-        "source": source.git(
-            uri='https://github.com/dante-signal31/geolocate',
-            branch='master'
-        ),
-        "profile": 'ubuntu-trusty',
-        "compile_python": True,
-        "python_version": '3.4.4',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside every IP'
-                    ' address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc."'
-                    ' --license BSD-3 --category net',
-        "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", "dummy1.0.0"]
-    }
+    "app": 'geolocate',
+    "version": '1.3.0',
+    "source": source.git(
+        uri='https://github.com/dante-signal31/geolocate',
+        branch='master'
+    ),
+    "profile": 'ubuntu-trusty',
+    "compile_python": True,
+    "python_version": '3.4.4',
+    "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
+                'https://github.com/dante-signal31/geolocate --description '
+                '"This program accepts any text and searchs inside every IP'
+                ' address. With each of those IP addresses, '
+                'geolocate queries '
+                'Maxmind GeoIP database to look for the city and '
+                'country where'
+                ' IP address or URL is located. Geolocate is designed to be'
+                ' used in console with pipes and redirections along with '
+                'applications like traceroute, nslookup, etc."'
+                ' --license BSD-3 --category net',
+    "requirements_path": '/REQUIREMENTS.txt',
+    "runtime_deps": ["libssl1.0.0", "dummy1.0.0"]
+}
 
 DUMMY_PACKAGE_NAME = "geolocate-1.3.0-ubuntu-trusty"
 DUMMY_PACKAGE_EXTENSION = ".deb"
@@ -167,7 +168,7 @@ def _create_dummy_configuration_file(configuration_text):
 def test_configuration_file_read():
     with _create_dummy_configuration_file(DUMMY_CONFIGURATION_TEXT) as config_file:
         configurations = configuration.read(config_file.name)
-        ubuntu_configuration = configuration.Configuration(configurations["Ubuntu-package"])
+        ubuntu_configuration = configurations["Ubuntu-package"]
         assert ubuntu_configuration.builder_parameters == CORRECT_UBUNTU_PARAMETERS
         assert ubuntu_configuration.output_folder == CORRECT_OUTPUT_FOLDER
         assert "Centos7-package" in configurations
@@ -219,8 +220,7 @@ def test_build_package_manual():
 
 
 def _generate_packages(configurations):
-    for _configuration in configurations.values():
-        package_configuration = configuration.Configuration(_configuration)
+    for package_configuration in configurations.values():
         builder.build_package(package_configuration)
         correct_output_package = os.path.join(
             package_configuration.output_folder,

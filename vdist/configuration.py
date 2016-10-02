@@ -15,6 +15,7 @@ LISTABLE_ARGUMENTS = {"source_git", "source_git_directory", "runtime_deps",
 LONG_TEXT_ARGUMENTS = {"fpm_args", "pip_args"}
 PROCESSABLE_ARGUMENTS = {"output_folder", "source_directory", "compile_python",
                          "fpm_args"}
+USELESS_ARGUMENTS = {"mode"}
 PROCESSABLE_ARGUMENTS |= LISTABLE_ARGUMENTS
 PROCESSABLE_ARGUMENTS |= LONG_TEXT_ARGUMENTS
 
@@ -24,7 +25,8 @@ class Configuration(object):
     def __init__(self, arguments):
         self.output_folder = arguments.get("output_folder", None)
         self.builder_parameters = {key: value for key, value in arguments.items()
-                                   if key not in PROCESSABLE_ARGUMENTS}
+                                   if key not in PROCESSABLE_ARGUMENTS and
+                                   key not in USELESS_ARGUMENTS}
         self._process_listable_arguments(arguments)
         self._process_long_text_arguments(arguments)
         self._process_source_directory_argument(arguments)
