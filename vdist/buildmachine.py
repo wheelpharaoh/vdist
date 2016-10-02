@@ -1,9 +1,11 @@
+from __future__ import absolute_import
+
 import itertools
 import logging
 import os
 import subprocess
 
-from vdist import defaults
+import vdist.defaults as defaults
 
 
 class BuildMachine(object):

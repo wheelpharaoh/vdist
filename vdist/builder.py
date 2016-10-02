@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import logging
 import os
 import shutil
@@ -5,10 +7,60 @@ import re
 import json
 import threading
 
+import sys
 from jinja2 import Environment, FileSystemLoader
 
-from vdist import defaults
-from vdist.buildmachine import BuildMachine
+import vdist.defaults as defaults
+import vdist.buildmachine as buildmachine
+
+
+def build_package(_configuration):
+    _create_package(_configuration)
+    _move_package_to_output_folder(_configuration)
+
+
+def _create_package(_configuration):
+    builder = Builder()
+    builder.add_build(**_configuration.builder_parameters)
+    builder.build()
+
+
+def _move_package_to_output_folder(_configuration,
+                                   source_folder=defaults.BUILD_BASEDIR):
+    _create_output_folder(_configuration)
+    package_folder = _get_generated_package_folder(_configuration,
+                                                   source_folder)
+    _move_generated_packages(_configuration, package_folder)
+
+
+def _move_generated_packages(_configuration, package_folder):
+    for file in os.listdir(package_folder):
+        # Only copy files with extension as they are likely the generated
+        # package.
+        if os.path.splitext(file)[1] != "":
+            file_pathname = os.path.join(package_folder, file)
+            shutil.copy(file_pathname, _configuration.output_folder)
+
+
+def _get_generated_package_folder(_configuration, source_folder):
+    return os.path.join(source_folder, _get_package_folder_name(_configuration))
+
+
+def _create_output_folder(_configuration):
+    if not os.path.exists(_configuration.output_folder):
+        _create_folder(_configuration)
+
+
+def _create_folder(_configuration):
+    if sys.version_info[0] == 3:
+        os.makedirs(_configuration.output_folder, exist_ok=True)
+    else:
+        os.makedirs(_configuration.output_folder)
+
+
+def _get_package_folder_name(_configuration):
+    package_folder = "{app}-{version}-{profile}".format(**_configuration.builder_parameters)
+    return package_folder
 
 
 class BuildProfile(object):
@@ -268,7 +320,7 @@ class Builder(object):
 
         self.logger.info('launching docker image: %s' % profile.docker_image)
 
-        build_machine = BuildMachine(
+        build_machine = buildmachine.BuildMachine(
             machine_logs=self.machine_logs,
             image=profile.docker_image,
             insecure_registry=profile.insecure_registry

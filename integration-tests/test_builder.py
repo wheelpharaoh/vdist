@@ -45,14 +45,12 @@ def _generate_rpm(builder_parameters, centos_version):
     homedir = os.path.expanduser('~')
     filename_prefix = "-".join([builder_parameters["app"],
                                 builder_parameters["version"]])
-    rpm_filename_prefix = "-".join([builder_parameters["app"],
-                                    builder_parameters["version"]])
     target_file = os.path.join(
         homedir,
         '.vdist',
         'dist',
         "".join([filename_prefix, "-{0}".format(centos_version)]),
-        "".join([rpm_filename_prefix, '-1.x86_64.rpm']),
+        "".join([filename_prefix, '-1.x86_64.rpm']),
     )
     assert os.path.isfile(target_file)
     assert os.path.getsize(target_file) > 0

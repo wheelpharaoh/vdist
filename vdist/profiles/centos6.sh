@@ -27,10 +27,11 @@ yum install -y {{build_deps|join(' ')}}
 # only install when needed, to save time with
 # pre-provisioned containers
 if [ ! -f /usr/bin/fpm ]; then
-    # Latest ruby 1.5.0 fails to install in centos 6.
-    # For more info read: https://github.com/jordansissel/fpm/issues/1090
-    # So force to 1.4.0 needed.
-    gem install fpm --version 1.4.0
+    # Latest fpm fails to install in Centos 6. There was a workaround
+    # for previous versions of fpm, but with last one it doesn't work
+    # any longer. Centos 6 profile won't work until this issue is fixed:
+    #   https://github.com/jordansissel/fpm/issues/1192
+    gem install fpm
 fi
 
 # install prerequisites
