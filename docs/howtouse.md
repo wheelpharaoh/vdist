@@ -48,6 +48,11 @@ profile = ubuntu-trusty
 profile = centos7
 ```
 
+Running vdist with last configuration file will place generated packages at path
+you set in *output_folder* variable. If you don't use absolute path but a
+relative one, then reference folder is the one where you are when vdist command
+is called. **Always set *output_folder* variable**.
+
 As you can see, there are three main **sections** in previous configuration: DEFAULT,
 Ubuntu-package, Centos7-package. You can name each section as you want but
 DEFAULT that should always exists in your configurations because, as its name
