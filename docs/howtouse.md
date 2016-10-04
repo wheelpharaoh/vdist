@@ -1,9 +1,149 @@
 ## How to use
-Inside your project, there are a few basic prerequisites for vdist to work.
+There are two ways to use vdist:
 
-1. Create a requirements.txt ('pip freeze > requirements.txt' inside a
-virtualenv should give you a good start); you probably already have one
-2. Create a small Python file that actually uses the vdist module
+1. Using its [console launcher](#console-launcher)
+2. [Create a small Python file](#integrating-vdist-in-a-python-script) that actually uses the vdist module
+
+On both cases you are strongly advised to create a requirements.txt
+('pip freeze > requirements.txt' inside a virtualenv should give you a good
+start); nevertheless you are likely to already have one.
+
+### Console launcher
+Probably the simplest way to use vdist. When you install vdist Pypi package a
+vdist executable is installed in your python distribution bin folder from which
+you installed the package. If you have that folder in your PATH then you can
+use vdist command directly, if not add that folder to path or call launcher
+using its absolute path.
+
+If you are going to use console launcher you only need to create a **configuration
+file** to put all parameter for all packages you want to generate. An example of a
+configuration file like that could be:
+
+```ini
+[DEFAULT]
+app = geolocate
+version = 1.3.0
+source_git = https://github.com/dante-signal31/${app}, master
+fpm_args = --maintainer dante.signal31@gmail.com -a native --url
+    https://github.com/dante-signal31/${app} --description
+    "This program accepts any text and searchs inside every IP
+    address. With each of those IP addresses,
+    ${app} queries
+    Maxmind GeoIP database to look for the city and
+    country where
+    IP address or URL is located. Geolocate is designed to be
+    used in console with pipes and redirections along with
+    applications like traceroute, nslookup, etc."
+    --license BSD-3 --category net
+requirements_path = /REQUIREMENTS.txt
+runtime_deps = libssl1.0.0, dummy1.0.0
+compile_python = True
+python_version = 3.4.4
+output_folder = ./vdist
+
+[Ubuntu-package]
+profile = ubuntu-trusty
+
+[Centos7-package]
+profile = centos7
+```
+
+As you can see, there are three main **sections** in previous configuration: DEFAULT,
+Ubuntu-package, Centos7-package. You can name each section as you want but
+DEFAULT that should always exists in your configurations because, as its name
+suggest, it contains default values that will apply to all of your packages
+unless one of the sections overrides any of the values. Write a section for
+every package you want to create.
+
+You can use **tags** in your configurations. In previous example ${app} tag
+pastes the value you set in *app* variable. You can cross-reference values
+from specific sections using tags with format *S{section:variable}*, but if you
+you don't specify a section variable is fetched from current section and
+probably from default one.
+
+To parse your configuration python's [configparser](https://docs.python.org/3/library/configparser.html)
+module is used. Be aware that [python 2's configparser](https://docs.python.org/2.7/library/configparser.html)
+is somewhat limited so, if you use python 2 vdist version, you won't be able to
+use cross-reference tags and you are going to need to change tags format because
+python 2 argparser use tags with format: *%(variable)s* (pay attention to last "s"
+it is not a typo). Because of that if you insist to use python 2 vdist version
+your configuration file should look like the following:
+
+```ini
+[DEFAULT]
+app = geolocate
+version = 1.3.0
+source_git = https://github.com/dante-signal31/%(app)s, master
+fpm_args = --maintainer dante.signal31@gmail.com -a native --url
+    https://github.com/dante-signal31/%(app)s --description
+    "This program accepts any text and searchs inside every IP
+    address. With each of those IP addresses,
+    %(app)s queries
+    Maxmind GeoIP database to look for the city and
+    country where
+    IP address or URL is located. Geolocate is designed to be
+    used in console with pipes and redirections along with
+    applications like traceroute, nslookup, etc."
+    --license BSD-3 --category net
+requirements_path = /REQUIREMENTS.txt
+runtime_deps = libssl1.0.0, dummy1.0.0
+compile_python = True
+python_version = 3.4.4
+output_folder = ./vdist
+
+[Ubuntu-package]
+profile = ubuntu-trusty
+
+[Centos7-package]
+profile = centos7
+```
+
+You can put your file whatever name and extension you want.
+
+Once you have a configuration file you can launch vdist from your console using
+**batch mode**:
+
+```bash
+$ vdist batch configuration_file
+```
+
+When launched vdist will create sequentially all packages configured in your
+file.
+
+Batch mode is the usual mode your are going to use through console but vdist
+offers a **manual mode** too. That mode does not use a configuration file but
+allows you to set parameters as command arguments:
+
+```bash
+$ vdist manual --app geolocate --version 1.3.0 --source_git https://github.com/dante-signal31/geolocate,master --profile ubuntu-trusty --compile_python --python_version 3.4.4 --fpm_args '--maintainer dante.signal31@gmail.com -a native --url https://github.com/dante-signal31/geolocate --description "This program accepts any text and searchs inside every IP address." --license BSD-3 --category net' --requirements_path /REQUIREMENTS.txt --runtime_deps libssl1.0.0 dummy1.0.0 --output_folder ./dist
+```
+
+Pay attention to the point that `--fpm_args` argument is enclosed in single quotes.
+
+Manual mode may be useful to dinamically set parameters through console scripts.
+
+Whatever mode you use you can call console help anytime:
+
+```bash
+$ vdist --help
+[...]
+
+$ vdist batch --help
+[...]
+
+$ vdist manual --help
+[...]
+```
+
+At ["Required arguments"](#required-arguments) and
+["Optional arguments"](#optional-arguments) sections, below in this very
+text, you can find a list of parameters you can set in your configuration file
+or through console manual parameters.
+
+### Integrating vdist in a python script
+Sometimes you may need not to run vdist from console but integrating it in
+another python application. You can do it too. In this section we are going
+to explain how to use vdist modules programatically.
 
 Here is a minimal example of how to use vdist to create an OS package of
 "yourapp" for Ubuntu Trusty. Create a file called package.py, which would
@@ -77,6 +217,10 @@ threads, so you will see the build output of both threads at the same time,
 where the logging of each thread can be identified by the build name.
 Here's an explanation of the keyword arguments that can be given to
 `add_build()`:
+
+At ["Required arguments"](#required-arguments) and
+["Optional arguments"](#optional-arguments) sections, below in this very
+text, you can find a list of parameters you can set in add_build().
 
 ### Required arguments:
 - `app` :: the name of the application to build; this should also equal the
