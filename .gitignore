@@ -11,6 +11,9 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+env2/
+env3/
+env3_b/
 bin/
 build/
 develop-eggs/
@@ -19,6 +22,7 @@ eggs/
 lib/
 lib64/
 parts/
+package_dist/
 sdist/
 var/
 include/
@@ -26,6 +30,9 @@ local/
 *.egg-info/
 .installed.cfg
 *.egg
+*.rpm
+*.deb
+
 
 # Installer logs
 pip-log.txt
@@ -58,3 +65,4 @@ docs/_build/
 
 # PyCharm
 .idea/
+tests/vdist/
