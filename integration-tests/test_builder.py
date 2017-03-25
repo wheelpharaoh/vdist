@@ -9,6 +9,18 @@ from vdist.source import git, git_directory, directory
 DEB_COMPILE_FILTER = [r'[^\.]', r'\./$', r'\./usr/', r'\./opt/$']
 DEB_NOCOMPILE_FILTER = [r'[^\.]', r'^\.\.', r'\./$', r'^\.$', r'\./opt/$']
 
+FPM_ARGS = '--maintainer dante.signal31@gmail.com -a native --url '
+           'https://github.com/dante-signal31/geolocate --description '
+           '"This program accepts any text and searchs inside every IP'
+           ' address. With each of those IP addresses, '
+           'geolocate queries '
+           'Maxmind GeoIP database to look for the city and '
+           'country where'
+           ' IP address or URL is located. Geolocate is designed to be'
+           ' used in console with pipes and redirections along with '
+           'applications like traceroute, nslookup, etc.'
+           ' " --license BSD-3 --category net'
+
 
 def _read_deb_contents(deb_file_pathname):
     entries = os.popen("dpkg -c {0}".format(deb_file_pathname)).readlines()
@@ -138,17 +150,7 @@ def test_generate_deb_from_git_setup_compile():
         "profile": 'ubuntu-trusty',
         "compile_python": True,
         "python_version": '3.4.4',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside every IP'
-                    ' address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc.'
-                    ' " --license BSD-3 --category net',
+        "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", ]
     }
@@ -175,17 +177,7 @@ def generate_rpm_from_git_setup_compile(centos_version):
         "profile": centos_version,
         "compile_python": True,
         "python_version": '3.4.4',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside every IP'
-                    ' address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc.'
-                    ' " --license BSD-3 --category net',
+        "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", ]
     }
@@ -289,18 +281,7 @@ def test_generate_deb_from_git_setup_nocompile():
         # package, it's is going to be a huge package but this way don't
         # need a private package repository.
         "python_basedir": '/usr',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside'
-                    ' every IP '
-                    'address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc.'
-                    ' " --license BSD-3 --category net',
+        "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", ]
     }
@@ -337,18 +318,7 @@ def generate_rpm_from_git_setup_nocompile(centos_version):
         # package, it's is going to be a huge package but this way don't
         # need a private package repository.
         "python_basedir": '/usr',
-        "fpm_args": '--maintainer dante.signal31@gmail.com -a native --url '
-                    'https://github.com/dante-signal31/geolocate --description '
-                    '"This program accepts any text and searchs inside'
-                    ' every IP '
-                    'address. With each of those IP addresses, '
-                    'geolocate queries '
-                    'Maxmind GeoIP database to look for the city and '
-                    'country where'
-                    ' IP address or URL is located. Geolocate is designed to be'
-                    ' used in console with pipes and redirections along with '
-                    'applications like traceroute, nslookup, etc.'
-                    ' " --license BSD-3 --category net',
+        "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", ]
     }
