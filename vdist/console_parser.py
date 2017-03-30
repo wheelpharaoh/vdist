@@ -137,6 +137,36 @@ def parse_arguments(args=None):
                                   help="Folder where generated packages should "
                                        "be placed.",
                                   metavar="OUTPUT_FOLDER")
+    manual_subparser.add_argument("--after_install",
+                                  required=False,
+                                  help="A script to be run after package "
+                                       "installation.",
+                                  metavar="AFTER_INSTALL_SCRIPT")
+    manual_subparser.add_argument("--before_install",
+                                  required=False,
+                                  help="A script to be run before package "
+                                       "installation.",
+                                  metavar="BEFORE_INSTALL_SCRIPT")
+    manual_subparser.add_argument("--after_remove",
+                                  required=False,
+                                  help="A script to be run after package "
+                                       "removal.",
+                                  metavar="AFTER_REMOVE_SCRIPT")
+    manual_subparser.add_argument("--before_remove",
+                                  required=False,
+                                  help="A script to be run before package "
+                                       "removal.",
+                                  metavar="BEFORE_REMOVE_SCRIPT")
+    manual_subparser.add_argument("--after_upgrade",
+                                  required=False,
+                                  help="A script to be run after package "
+                                       "upgrade.",
+                                  metavar="AFTER_UPGRADE_SCRIPT")
+    manual_subparser.add_argument("--before_upgrade",
+                                  required=False,
+                                  help="A script to be run before package "
+                                       "upgrade",
+                                  metavar="BEFORE_UPGRADE_SCRIPT")
     parsed_arguments = vars(arg_parser.parse_args(args))
     filtered_parser_arguments = {key: value for key, value in parsed_arguments.items()
                                  if value is not None}
