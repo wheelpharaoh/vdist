@@ -15,6 +15,8 @@ LISTABLE_ARGUMENTS = {"source_git", "source_git_directory", "runtime_deps",
 LONG_TEXT_ARGUMENTS = {"fpm_args", "pip_args"}
 PROCESSABLE_ARGUMENTS = {"output_folder", "source_directory", "compile_python",
                          "fpm_args"}
+SCRIPTS_ARGUMENTS = {"after_install", "before_install", "after_remove",
+                     "before_remove", "after_upgrade", "before_upgrade"}
 USELESS_ARGUMENTS = {"mode"}
 PROCESSABLE_ARGUMENTS |= LISTABLE_ARGUMENTS
 PROCESSABLE_ARGUMENTS |= LONG_TEXT_ARGUMENTS
@@ -32,23 +34,16 @@ class Configuration(object):
         self._process_source_directory_argument(arguments)
         self._process_compile_python_argument(arguments)
 
-    def _process_compile_python_argument(self, arguments):
-        if "compile_python" in arguments.keys():
-            self.builder_parameters["compile_python"] = bool(
-                arguments["compile_python"])
-
     def _process_source_directory_argument(self, arguments):
         if "source_directory" in arguments.keys():
             directory = arguments["source_directory"]
             directory = directory.strip()
             self.builder_parameters["source"] = source.directory(directory)
 
-    def _process_long_text_arguments(self, arguments):
-        argument_keys = set(arguments.keys())
-        long_text_arguments_found = LONG_TEXT_ARGUMENTS.intersection(argument_keys)
-        for argument in long_text_arguments_found:
-            text_with_no_cr = _remove_cr(arguments[argument])
-            self.builder_parameters[argument] = text_with_no_cr
+    def _process_compile_python_argument(self, arguments):
+        if "compile_python" in arguments.keys():
+            self.builder_parameters["compile_python"] = bool(
+                arguments["compile_python"])
 
     def _process_listable_arguments(self, arguments):
         argument_keys = set(arguments.keys())
@@ -65,6 +60,14 @@ class Configuration(object):
                     generated_list[1])
             if argument in ["runtime_deps", "build_deps"]:
                 self.builder_parameters[argument] = generated_list
+
+    def _process_long_text_arguments(self, arguments):
+        argument_keys = set(arguments.keys())
+        long_text_arguments_found = LONG_TEXT_ARGUMENTS.intersection(
+            argument_keys)
+        for argument in long_text_arguments_found:
+            text_with_no_cr = _remove_cr(arguments[argument])
+            self.builder_parameters[argument] = text_with_no_cr
 
 
 def _create_list(_list):

@@ -10,6 +10,7 @@ import threading
 import sys
 from jinja2 import Environment, FileSystemLoader
 
+import vdist.configuration as configuration
 import vdist.defaults as defaults
 import vdist.buildmachine as buildmachine
 
@@ -106,7 +107,13 @@ class Build(object):
                  working_dir='', python_basedir=None,
                  compile_python=True,
                  python_version=defaults.PYTHON_VERSION,
-                 requirements_path='/requirements.txt'):
+                 requirements_path='/requirements.txt',
+                 after_install=None,
+                 before_install=None,
+                 after_remove=None,
+                 before_remove=None,
+                 after_upgrade=None,
+                 before_upgrade=None):
         self.app = app
         self.version = version.format(**os.environ)
         self.source = source
@@ -141,7 +148,9 @@ class Build(object):
             self.runtime_deps = runtime_deps
 
         self.profile = profile
-        self.fpm_args = fpm_args.format(**os.environ)
+        # I don't like method chaining but I didn't get it to work with a
+        # auxiliary variable.
+        self.fpm_args = self._append_scripts_to_args(locals()).format(**os.environ)
         self.pip_args = pip_args.format(**os.environ)
 
         if not name:
@@ -167,6 +176,23 @@ class Build(object):
                 [self.app, self.version, self.profile]
             )
         )
+
+    @staticmethod
+    def _append_scripts_to_args(arguments):
+        fpm_args = arguments["fpm_args"]
+
+        if arguments["package_tmp_root"] is None:
+            tmp_root = defaults.PACKAGE_TMP_ROOT
+        else:
+            tmp_root = arguments["package_tmp_root"]
+
+        for key in configuration.SCRIPTS_ARGUMENTS:
+            if arguments[key] is not None:
+                script_path = os.path.join(tmp_root, arguments[key])
+                fpm_args = "".join(["--{key} {value} ".format(key=key,
+                                                              value=script_path),
+                                    fpm_args])
+        return fpm_args
 
 
 class Builder(object):
@@ -350,6 +376,7 @@ class Builder(object):
         threads = []
 
         for build in self.builds:
+            ## TODO: Try if there's any improvement using multiprocessing.
             t = threading.Thread(
                 name=build.name,
                 target=self.run_build,

@@ -20,6 +20,7 @@ fi
 apt-get install -y {{build_deps|join(' ')}}
 {% endif %}
 
+# Download and compile what is going to be our portable python environment.
 {% if compile_python %}
     apt-get build-dep python -y
     apt-get install libssl-dev -y
@@ -33,12 +34,14 @@ apt-get install -y {{build_deps|join(' ')}}
     make && make install
 {% endif %}
 
+# Create temporary folder to place our application files.
 if [ ! -d {{package_tmp_root}} ]; then
     mkdir -p {{package_tmp_root}}
 fi
 
 cd {{package_tmp_root}}
 
+# Place application files inside temporary folder.
 {% if source.type == 'git' %}
 
     git clone {{source.uri}}
@@ -86,6 +89,7 @@ else
     PIP_BIN="$PYTHON_BASEDIR/bin/pip3"
 fi
 
+# Install package python dependencies inside portable puython environment.
 if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install -U pip setuptools
     virtualenv -p $PYTHON_BIN .
@@ -93,6 +97,8 @@ if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install {{pip_args}} -r $PWD{{requirements_path}}
 fi
 
+# If we have an installer, install our application inside our portable python
+# environment.
 if [ -f "setup.py" ]; then
     $PYTHON_BIN setup.py install
     built=true

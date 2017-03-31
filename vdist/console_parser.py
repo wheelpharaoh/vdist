@@ -137,6 +137,9 @@ def parse_arguments(args=None):
                                   help="Folder where generated packages should "
                                        "be placed.",
                                   metavar="OUTPUT_FOLDER")
+    # WARNING: Keep package scripts arguments names similar to fpm arguments for
+    # scripts. Arguments names from here are directly used as fpm arguments
+    # names.
     manual_subparser.add_argument("--after_install",
                                   required=False,
                                   help="A script to be run after package "
