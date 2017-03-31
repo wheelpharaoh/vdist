@@ -152,7 +152,9 @@ def test_generate_deb_from_git_setup_compile():
         "python_version": '3.4.4',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ]
+        "runtime_deps": ["libssl1.0.0", ],
+        "after_install": 'packaging/debian/postinst.sh',
+        "after_remove": 'packaging/debian/postuninst.sh'
     }
     target_file = _generate_deb(builder_parameters)
     file_list_purged = _get_purged_deb_file_list(target_file,
