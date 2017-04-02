@@ -186,10 +186,16 @@ class Build(object):
         else:
             tmp_root = arguments["package_tmp_root"]
 
-        for key in configuration.SCRIPTS_ARGUMENTS:
-            if arguments[key] is not None:
-                script_path = os.path.join(tmp_root, arguments[key])
-                fpm_args = "".join(["--{key} {value} ".format(key=key,
+        for script_type in configuration.SCRIPTS_ARGUMENTS:
+            if arguments[script_type] is not None:
+                # fpm uses dashes in its arguments but I don't because they
+                # cannot be used as dict keys. So I use underscores that
+                # must be converted here.
+                fpm_argument_name = script_type.replace("_", "-")
+                script_path = os.path.join(tmp_root,
+                                           arguments["app"],
+                                           arguments[script_type])
+                fpm_args = "".join(["--{key} {value} ".format(key=fpm_argument_name,
                                                               value=script_path),
                                     fpm_args])
         return fpm_args
