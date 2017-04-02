@@ -37,6 +37,8 @@ if sys.version_info[0] == 3:
     compile_python = True
     python_version = 3.4.4
     output_folder = ./vdist
+    after_install = packaging/postinst.sh
+    after_remove = packaging/postuninst.sh
 
     [Ubuntu-package]
     profile = ubuntu-trusty
@@ -68,6 +70,8 @@ runtime_deps = libssl1.0.0, dummy1.0.0
 compile_python = True
 python_version = 3.4.4
 output_folder = ./vdist
+after_install = packaging/postinst.sh
+after_remove = packaging/postuninst.sh
 
 [Ubuntu-package]
 profile = ubuntu-trusty
@@ -99,7 +103,9 @@ UBUNTU_ARGPARSED_ARGUMENTS = {
                 ' --license BSD-3 --category net',
     "requirements_path": '/REQUIREMENTS.txt',
     "runtime_deps": ["libssl1.0.0", "dummy1.0.0"],
-    "output_folder": DUMMY_OUTPUT_FOLDER
+    "output_folder": DUMMY_OUTPUT_FOLDER,
+    "after_install": 'packaging/postinst.sh',
+    "after_remove": 'packaging/postuninst.sh'
 }
 
 CORRECT_UBUNTU_PARAMETERS = {
@@ -124,7 +130,9 @@ CORRECT_UBUNTU_PARAMETERS = {
                 'applications like traceroute, nslookup, etc."'
                 ' --license BSD-3 --category net',
     "requirements_path": '/REQUIREMENTS.txt',
-    "runtime_deps": ["libssl1.0.0", "dummy1.0.0"]
+    "runtime_deps": ["libssl1.0.0", "dummy1.0.0"],
+    "after_install": 'packaging/postinst.sh',
+    "after_remove": 'packaging/postuninst.sh'
 }
 
 DUMMY_PACKAGE_NAME = "geolocate-1.3.0-ubuntu-trusty"
@@ -154,7 +162,9 @@ DUMMY_MANUAL_ARGUMENTS = ["manual",
                                         ' --license BSD-3 --category net',
                           "--requirements_path", "/REQUIREMENTS.txt",
                           "--runtime_deps", "libssl1.0.0", "dummy1.0.0",
-                          "--output_folder", DUMMY_OUTPUT_FOLDER]
+                          "--output_folder", DUMMY_OUTPUT_FOLDER,
+                          "--after_install", 'packaging/postinst.sh',
+                          "after_remove", 'packaging/postuninst.sh']
 
 
 @contextlib.contextmanager

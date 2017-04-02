@@ -153,8 +153,8 @@ def test_generate_deb_from_git_setup_compile():
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
         "runtime_deps": ["libssl1.0.0", ],
-        "after_install": 'packaging/debian/postinst.sh',
-        "after_remove": 'packaging/debian/postuninst.sh'
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
     target_file = _generate_deb(builder_parameters)
     file_list_purged = _get_purged_deb_file_list(target_file,
@@ -181,7 +181,9 @@ def generate_rpm_from_git_setup_compile(centos_version):
         "python_version": '3.4.4',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ]
+        "runtime_deps": ["libssl1.0.0", ],
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
     target_file = _generate_rpm(builder_parameters, centos_version)
     file_list = _read_rpm_contents(target_file)
@@ -285,7 +287,9 @@ def test_generate_deb_from_git_setup_nocompile():
         "python_basedir": '/usr',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ]
+        "runtime_deps": ["libssl1.0.0", ],
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
     target_file = _generate_deb(builder_parameters)
     file_list_purged = _get_purged_deb_file_list(target_file,
@@ -322,7 +326,9 @@ def generate_rpm_from_git_setup_nocompile(centos_version):
         "python_basedir": '/usr',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ]
+        "runtime_deps": ["libssl1.0.0", ],
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
     target_file = _generate_rpm(builder_parameters, centos_version)
     file_list = _read_rpm_contents(target_file)
