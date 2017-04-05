@@ -304,7 +304,7 @@ def test_generate_deb_from_git_setup_nocompile():
     assert python_interpreter in file_list_purged
     # If application was properly packaged then launcher should be in bin folder
     # too.
-    geolocate_launcher = "./usr/bin/geolocate"
+    geolocate_launcher = "./usr/local/bin/geolocate"
     assert geolocate_launcher in file_list_purged
 
 
