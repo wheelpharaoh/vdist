@@ -2,31 +2,30 @@
 PYTHON_VERSION="{{python_version}}"
 PYTHON_BASEDIR="{{python_basedir}}"
 
-# fail on error
+# Fail on error.
 set -e
 
-# install fpm
+# Install general prerequisites.
 apt-get update
 apt-get install ruby-dev build-essential git python-virtualenv curl libssl-dev libsqlite3-dev libgdbm-dev libreadline-dev libbz2-dev libncurses5-dev tk-dev python3 python3-pip -y
 
-# only install when needed, to save time with
-# pre-provisioned containers
+# Only install when needed, to save time with
+# pre-provisioned containers.
 if [ ! -f /usr/bin/fpm ]; then
     gem install fpm
 fi
 
-# install build dependencies
 {% if build_deps %}
+# Install build dependencies.
 apt-get install -y {{build_deps|join(' ')}}
 {% endif %}
 
+{% if compile_python %}
 # Download and compile what is going to be the Python we are going to use
 # as our portable python environment.
-{% if compile_python %}
     apt-get build-dep python -y
     apt-get install libssl-dev -y
 
-    # compile and install python
     cd /var/tmp
     curl -O https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz
     tar xzvf Python-$PYTHON_VERSION.tgz
@@ -42,15 +41,16 @@ fi
 
 cd {{package_tmp_root}}
 
-# Place application files inside temporary folder.
 {% if source.type == 'git' %}
-
+    # Place application files inside temporary folder after dowloading it from
+    # git repository.
     git clone {{source.uri}}
     cd {{project_root}}
     git checkout {{source.branch}}
 
 {% elif source.type in ['directory', 'git_directory'] %}
-
+    # Place application files inside temporary folder after copying it from
+    # local folder.
     cp -r {{scratch_dir}}/{{project_root}} .
     cd {{package_tmp_root}}/{{project_root}}
 
@@ -70,12 +70,12 @@ cd {{package_tmp_root}}
     cp -r {{scratch_dir}}/.pip ~
 {% endif %}
 
-# when working_dir is set, assume that is the base and remove the rest
 {% if working_dir %}
+    # When working_dir is set, assume that is the base and remove the rest
     mv {{working_dir}} {{package_tmp_root}} && rm -rf {{package_tmp_root}}/{{project_root}}
     cd {{package_tmp_root}}/{{working_dir}}
 
-    # reset project_root
+    # Reset project_root
     {% set project_root = working_dir %}
 {% endif %}
 
@@ -87,6 +87,9 @@ cd {{package_tmp_root}}
 ## should remove next line in a further revision.
 rm -rf bin include lib local
 
+# To install our application and dependencies inside our portable python
+# environment we have to run setup.py and download from Pypi using our
+# portable python environment "python" and "pip" executables.
 if [[ ${PYTHON_VERSION:0:1} == "2" ]]; then
     PYTHON_BIN="$PYTHON_BASEDIR/bin/python"
     PIP_BIN="$PYTHON_BASEDIR/bin/pip"
@@ -112,7 +115,7 @@ fi
 
 cd /
 
-# get rid of VCS info
+# Get rid of VCS info
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
 
