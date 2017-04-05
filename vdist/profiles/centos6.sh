@@ -3,10 +3,10 @@ PYTHON_VERSION="{{python_version}}"
 PYTHON_BASEDIR="{{python_basedir}}"
 CONTAINER_PYTHON3_VERSION="5"
 
-# fail on error
+# Fail on error
 set -e
 
-# install general prerequisites
+# Install general prerequisites
 yum -y update
 yum groupinstall -y "Development Tools"
 yum install -y ruby-devel curl libyaml-devel which tar rpm-build rubygems git python-setuptools zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc gcc-c++
@@ -19,26 +19,31 @@ yum install -y python3${CONTAINER_PYTHON3_VERSION}u python3${CONTAINER_PYTHON3_V
 ln -s /usr/bin/python3.$CONTAINER_PYTHON3_VERSION /usr/bin/python3
 ln -s /usr/bin/pip3.$CONTAINER_PYTHON3_VERSION /usr/bin/pip3
 
-# install build dependencies needed for this specific build
+# Install build dependencies.
 {% if build_deps %}
 yum install -y {{build_deps|join(' ')}}
 {% endif %}
 
-# only install when needed, to save time with
+# Only install when needed, to save time with
 # pre-provisioned containers
 if [ ! -f /usr/bin/fpm ]; then
-    # Latest fpm fails to install in Centos 6. There was a workaround
-    # for previous versions of fpm, but with last one it doesn't work
-    # any longer. Centos 6 profile won't work until this issue is fixed:
+    # Latest fpm fails to install in Centos 6.
+    #
+    # gem install fpm
+    #
+    # Applied workaround from:
     #   https://github.com/jordansissel/fpm/issues/1192
-    gem install fpm
+    #
+    gem install fpm --no-ri --no-rdoc || gem install fpm --no-ri --no-rdoc --version 1.4.0
 fi
 
-# install prerequisites
-easy_install virtualenv
+# Install prerequisites
+## TODO: Try to comment this. I think we don't need it any longer.
+# easy_install virtualenv
 
 {% if compile_python %}
-    # compile and install python
+# Download and compile what is going to be the Python we are going to use
+# as our portable python environment.
     cd /var/tmp
     curl -O https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz
     tar xzvf Python-$PYTHON_VERSION.tgz
@@ -64,6 +69,7 @@ easy_install virtualenv
     fi
 {% endif %}
 
+# Create temporary folder to place our application files.
 if [ ! -d {{package_tmp_root}} ]; then
     mkdir -p {{package_tmp_root}}
 fi
@@ -71,13 +77,15 @@ fi
 cd {{package_tmp_root}}
 
 {% if source.type == 'git' %}
-
+    # Place application files inside temporary folder after dowloading it from
+    # git repository.
     git clone {{source.uri}}
     cd {{project_root}}
     git checkout {{source.branch}}
 
 {% elif source.type in ['directory', 'git_directory'] %}
-
+    # Place application files inside temporary folder after copying it from
+    # local folder.
     cp -r {{scratch_dir}}/{{project_root}} .
     cd {{package_tmp_root}}/{{project_root}}
 
@@ -96,18 +104,26 @@ cd {{package_tmp_root}}
     cp -r {{scratch_dir}}/.pip ~
 {% endif %}
 
-# when working_dir is set, assume that is the base and remove the rest
+# When working_dir is set, assume that is the base and remove the rest
 {% if working_dir %}
     mv {{working_dir}} {{package_tmp_root}} && rm -rf {{package_tmp_root}}/{{project_root}}
     cd {{package_tmp_root}}/{{working_dir}}
 
-    # reset project_root
+    # Reset project_root
     {% set project_root = working_dir %}
 {% endif %}
 
-# brutally remove virtualenv stuff from the current directory
+# We are going to remove any traces of a previous virtualenv that we could
+# have imported with project, to keep things clean.
+## TODO: Give it a second thought. It's odd to have virtualenv folders in a
+## code repository. Whereas you may have a folder called "lib" or "bin" that
+## you may want to package but it doesn't come from a virtualenv. Maybe we
+## should remove next line in a further revision.
 rm -rf bin include lib local
 
+# To install our application and dependencies inside our portable python
+# environment we have to run setup.py and download from Pypi using our
+# portable python environment "python" and "pip" executables.
 if [[ ${PYTHON_VERSION:0:1} == "2" ]]; then
     PYTHON_BIN="$PYTHON_BASEDIR/bin/python"
     PIP_BIN="$PYTHON_BASEDIR/bin/pip"
@@ -117,33 +133,44 @@ else
     PIP_BIN="$PYTHON_BASEDIR/bin/pip3"
 fi
 
+# Install package python dependencies inside our portable python environment.
 if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install -U pip setuptools
-    virtualenv -p $PYTHON_BIN .
-    source bin/activate
+    ## TODO: Try to comment these next two. I think we don't need it any longer.
+    # virtualenv -p $PYTHON_BIN .
+    # source bin/activate
     $PIP_BIN install {{pip_args}} -r $PWD{{requirements_path}}
 fi
 
+# If we have an installer, install our application inside our portable python
+# environment.
 if [ -f "setup.py" ]; then
     $PYTHON_BIN setup.py install
-    built=true
+    setup=true
 else
-    built=false
+    setup=false
 fi
 
 cd /
 
-# get rid of VCS info
+# Get rid of VCS info
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
 
-if $built; then
+# If setup==true then we have installed our application inside our portable python
+# environment, so we package that environment.
+if $setup; then
     {% if custom_filename %}
         fpm -s dir -t rpm -n {{app}} -p {{package_tmp_root}}/{{custom_filename}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} $PYTHON_BASEDIR
     {% else %}
         fpm -s dir -t rpm -n {{app}} -p {{package_tmp_root}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} $PYTHON_BASEDIR
     {% endif %}
     cp {{package_tmp_root}}/*rpm {{shared_dir}}
+# If setup==false then our application is in a different folder than our
+# portable python environment. So we package both: our application folder and
+# the one with our python package environment. In this case packager should use
+# packaging scripts to create proper links and launchers at installation side so
+# application is launched using the packaged python environment.
 else
     mkdir -p {{package_install_root}}/{{app}}
     cp -r {{package_tmp_root}}/{{app}}/* {{package_install_root}}/{{app}}/.
