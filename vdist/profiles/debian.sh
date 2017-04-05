@@ -20,7 +20,8 @@ fi
 apt-get install -y {{build_deps|join(' ')}}
 {% endif %}
 
-# Download and compile what is going to be our portable python environment.
+# Download and compile what is going to be the Python we are going to use
+# as our portable python environment.
 {% if compile_python %}
     apt-get build-dep python -y
     apt-get install libssl-dev -y
@@ -78,7 +79,12 @@ cd {{package_tmp_root}}
     {% set project_root = working_dir %}
 {% endif %}
 
-# brutally remove virtualenv stuff from the current directory
+# We are going to remove any traces of a previous virtualenv that we could
+# have imported with project, to keep things clean.
+## TODO: Give it a second thought. It's odd to have virtualenv folders in a
+## code repository. Whereas you may have a folder called "lib" or "bin" that
+## you may want to package but it doesn't come from a virtualenv. Maybe we
+## should remove next line in a further revision.
 rm -rf bin include lib local
 
 if [[ ${PYTHON_VERSION:0:1} == "2" ]]; then
@@ -89,11 +95,9 @@ else
     PIP_BIN="$PYTHON_BASEDIR/bin/pip3"
 fi
 
-# Install package python dependencies inside portable puython environment.
+# Install package python dependencies inside our portable python environment.
 if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install -U pip setuptools
-    virtualenv -p $PYTHON_BIN .
-    source bin/activate
     $PIP_BIN install {{pip_args}} -r $PWD{{requirements_path}}
 fi
 
@@ -101,9 +105,9 @@ fi
 # environment.
 if [ -f "setup.py" ]; then
     $PYTHON_BIN setup.py install
-    built=true
+    setup=true
 else
-    built=false
+    setup=false
 fi
 
 cd /
@@ -112,13 +116,20 @@ cd /
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
 
-if $built; then
+# If setup==true then we have installed our application inside our portable python
+# environment, so we package that environment.
+if $setup; then
     {% if custom_filename %}
         fpm -s dir -t deb -n {{app}} -p {{package_tmp_root}}/{{custom_filename}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} $PYTHON_BASEDIR
     {% else %}
         fpm -s dir -t deb -n {{app}} -p {{package_tmp_root}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} $PYTHON_BASEDIR
     {% endif %}
     cp {{package_tmp_root}}/*deb {{shared_dir}}
+# If setup==false then our application is in a different folder than our
+# portable python environment. So we package both: our application folder and
+# the one with our python package environment. In this case packager should use
+# packaging scripts to create proper links and launchers at installation side so
+# application is launched using the packaged python environment.
 else
     mkdir -p {{package_install_root}}/{{app}}
     cp -r {{package_tmp_root}}/{{app}}/* {{package_install_root}}/{{app}}/.
