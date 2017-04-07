@@ -350,7 +350,11 @@ def test_generate_rpm_from_git_setup_nocompile_centos6():
     _generate_rpm_from_git_setup_nocompile("centos6")
 
 
-# TODO: This test fails <<<<<<<<<<<<
+# TODO: This test fails <<<<<<<<<<<<<
+# WARNING: Something wrong happens with "nocompile" tests in centos7.
+# I don't know why fpm call corrupts some lib in the linux container so
+# further cp command fails. This does not happen in centos6 or debian even
+# when fpm commands are the same. Any help with this issue will be welcome.
 def test_generate_rpm_from_git_setup_nocompile_centos7():
     _generate_rpm_from_git_setup_nocompile("centos7")
 
@@ -421,6 +425,10 @@ def test_generate_rpm_from_git_nosetup_nocompile_centos6():
 
 
 # TODO: This test fails <<<<<<<<<<<<<
+# WARNING: Something wrong happens with "nocompile" tests in centos7.
+# I don't know why fpm call corrupts some lib in the linux container so
+# further cp command fails. This does not happen in centos6 or debian even
+# when fpm commands are the same. Any help with this issue will be welcome.
 def test_generate_rpm_from_git_nosetup_nocompile_centos7():
     _generate_rpm_from_git_nosetup_nocompile("centos7")
 
