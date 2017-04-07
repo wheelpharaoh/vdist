@@ -105,7 +105,7 @@ def test_generate_deb_from_git():
     _ = _generate_deb(builder_parameters)
 
 
-def generate_rpm_from_git(centos_version):
+def _generate_rpm_from_git(centos_version):
     builder_parameters = {"app": 'vdist-test-generate-rpm-from-git',
                           "version": '1.0',
                           "source": git(
@@ -117,11 +117,11 @@ def generate_rpm_from_git(centos_version):
 
 
 def test_generate_rpm_from_git_centos6():
-    generate_rpm_from_git("centos6")
+    _generate_rpm_from_git("centos6")
 
 
 def test_generate_rpm_from_git_centos7():
-    generate_rpm_from_git("centos7")
+    _generate_rpm_from_git("centos7")
 
 
 # Scenarios to test:
@@ -168,7 +168,7 @@ def test_generate_deb_from_git_setup_compile():
     assert geolocate_launcher in file_list_purged
 
 
-def generate_rpm_from_git_setup_compile(centos_version):
+def _generate_rpm_from_git_setup_compile(centos_version):
     builder_parameters = {
         "app": 'geolocate',
         "version": '1.3.0',
@@ -197,11 +197,11 @@ def generate_rpm_from_git_setup_compile(centos_version):
 
 
 def test_generate_rpm_from_git_setup_compile_centos6():
-    generate_rpm_from_git_setup_compile("centos6")
+    _generate_rpm_from_git_setup_compile("centos6")
 
 
 def test_generate_rpm_from_git_setup_compile_centos7():
-    generate_rpm_from_git_setup_compile("centos7")
+    _generate_rpm_from_git_setup_compile("centos7")
 
 
 # Scenario 2.- Project not containing a setup.py and compiles Python -> package
@@ -233,7 +233,7 @@ def test_generate_deb_from_git_nosetup_compile():
                for file_entry in file_list_purged)
 
 
-def generate_rpm_from_git_nosetup_compile(centos_version):
+def _generate_rpm_from_git_nosetup_compile(centos_version):
     builder_parameters = {"app": 'jtrouble',
                           "version": '1.0.0',
                           "source": git(
@@ -260,11 +260,11 @@ def generate_rpm_from_git_nosetup_compile(centos_version):
 
 
 def test_generate_rpm_from_git_nosetup_compile_centos6():
-    generate_rpm_from_git_nosetup_compile("centos6")
+    _generate_rpm_from_git_nosetup_compile("centos6")
 
 
 def test_generate_rpm_from_git_nosetup_compile_centos7():
-    generate_rpm_from_git_nosetup_compile("centos7")
+    _generate_rpm_from_git_nosetup_compile("centos7")
 
 
 # Scenario 3 - Project containing a setup.py and using a prebuilt Python package
@@ -308,7 +308,7 @@ def test_generate_deb_from_git_setup_nocompile():
     assert geolocate_launcher in file_list_purged
 
 
-def generate_rpm_from_git_setup_nocompile(centos_version):
+def _generate_rpm_from_git_setup_nocompile(centos_version):
     builder_parameters = {
         "app": 'geolocate',
         "version": '1.3.0',
@@ -347,11 +347,12 @@ def generate_rpm_from_git_setup_nocompile(centos_version):
 
 
 def test_generate_rpm_from_git_setup_nocompile_centos6():
-    generate_rpm_from_git_setup_nocompile("centos6")
+    _generate_rpm_from_git_setup_nocompile("centos6")
 
 
+# TODO: This test fails <<<<<<<<<<<<
 def test_generate_rpm_from_git_setup_nocompile_centos7():
-    generate_rpm_from_git_setup_nocompile("centos7")
+    _generate_rpm_from_git_setup_nocompile("centos7")
 
 
 # Scenario 4.- Project not containing a setup.py and using a prebuilt Python
@@ -386,7 +387,7 @@ def test_generate_deb_from_git_nosetup_nocompile():
     assert python_interpreter in file_list_purged
 
 
-def generate_rpm_from_git_nosetup_nocompile(centos_version):
+def _generate_rpm_from_git_nosetup_nocompile(centos_version):
     builder_parameters = {
         "app": 'jtrouble',
         "version": '1.0.0',
@@ -416,11 +417,12 @@ def generate_rpm_from_git_nosetup_nocompile(centos_version):
 
 
 def test_generate_rpm_from_git_nosetup_nocompile_centos6():
-    generate_rpm_from_git_nosetup_nocompile("centos6")
+    _generate_rpm_from_git_nosetup_nocompile("centos6")
 
 
+# TODO: This test fails <<<<<<<<<<<<<
 def test_generate_rpm_from_git_nosetup_nocompile_centos7():
-    generate_rpm_from_git_nosetup_nocompile("centos7")
+    _generate_rpm_from_git_nosetup_nocompile("centos7")
 
 
 def test_generate_deb_from_git_suffixed():
@@ -434,7 +436,7 @@ def test_generate_deb_from_git_suffixed():
     _ = _generate_deb(builder_parameters)
 
 
-def generate_rpm_from_git_suffixed(centos_version):
+def _generate_rpm_from_git_suffixed(centos_version):
     builder_parameters = {"app": 'vdist-test-generate-deb-from-git-suffixed',
                           "version": '1.0',
                           "source": git(
@@ -446,11 +448,11 @@ def generate_rpm_from_git_suffixed(centos_version):
 
 
 def test_generate_rpm_from_git_suffixed_centos6():
-    generate_rpm_from_git_suffixed("centos6")
+    _generate_rpm_from_git_suffixed("centos6")
 
 
 def test_generate_rpm_from_git_suffixed_centos7():
-    generate_rpm_from_git_suffixed("centos7")
+    _generate_rpm_from_git_suffixed("centos7")
 
 
 def test_generate_deb_from_git_directory():
@@ -471,7 +473,7 @@ def test_generate_deb_from_git_directory():
     _ = _generate_deb(builder_parameters)
 
 
-def generate_rpm_from_git_directory(centos_version):
+def _generate_rpm_from_git_directory(centos_version):
     tempdir = tempfile.gettempdir()
     checkout_dir = os.path.join(tempdir, 'vdist')
 
@@ -490,11 +492,11 @@ def generate_rpm_from_git_directory(centos_version):
 
 
 def test_generate_rpm_from_git_directory_centos6():
-    generate_rpm_from_git_directory("centos6")
+    _generate_rpm_from_git_directory("centos6")
 
 
 def test_generate_rpm_from_git_directory_centos7():
-    generate_rpm_from_git_directory("centos7")
+    _generate_rpm_from_git_directory("centos7")
 
 
 def test_generate_deb_from_directory():
@@ -514,7 +516,7 @@ def test_generate_deb_from_directory():
     _ = _generate_deb(builder_parameters)
 
 
-def generate_rpm_from_directory(centos_version):
+def _generate_rpm_from_directory(centos_version):
     tempdir = tempfile.gettempdir()
     checkout_dir = os.path.join(tempdir, 'vdist')
 
@@ -532,9 +534,9 @@ def generate_rpm_from_directory(centos_version):
 
 
 def test_generate_rpm_from_directory_centos6():
-    generate_rpm_from_directory("centos6")
+    _generate_rpm_from_directory("centos6")
 
 
 def test_generate_rpm_from_directory_centos7():
-    generate_rpm_from_directory("centos7")
+    _generate_rpm_from_directory("centos7")
 
