@@ -37,7 +37,7 @@ you provide to vdist will be injected into these templates.
 By default, vdist provides the scripts `centos.sh` and `debian.sh` as
 generic templates for RHEL/CentOS/Fedora and Debian/Ubuntu based images,
 so you can use those when defining your profile. You can take a look at
-[the templates provided by vdist](https://github.com/objectified/vdist/tree/master/vdist/profiles)
+[the templates provided by vdist](https://github.com/dante-signal31/vdist/tree/master/vdist/profiles)
 to get an idea of how they work, and how to create your own. Custom shell
 scripts can be put in the `buildprofiles` directory alongside your
 profiles.json file. All parameters that are given by you when calling

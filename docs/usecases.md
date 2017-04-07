@@ -75,7 +75,9 @@ builder_parameters = {
                     ' used in console with pipes and redirections along with '
                     'applications like traceroute, nslookup, etc.'
                     ' " --license BSD-3 --category net',
-        "requirements_path": '/REQUIREMENTS.txt'
+        "requirements_path": '/REQUIREMENTS.txt',
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
 ```
 This configuration would generate a package including only an */opt/geolocate*
@@ -119,7 +121,7 @@ difference is that while scenarios 1 and 2 download an interpreter from the
 internet and compile it, scenarios 3 and 4 look for desired interpreter in the
 docker container file system so that interpreter should be installed before
 as a system package downloaded from a private repository or should be compiled
-and included by default in a custom docker conatiner image. If you are in a
+and included by default in a custom docker container image. If you are in a
 corporate enviroment you'll probably prefer this option because you'll probably
 have enough resources to have your own private system package repository and
 this way you can speed up greatly packaging process.
@@ -154,7 +156,9 @@ builder_parameters = {
                     ' used in console with pipes and redirections along with '
                     'applications like traceroute, nslookup, etc.'
                     ' " --license BSD-3 --category net',
-        "requirements_path": '/REQUIREMENTS.txt'
+        "requirements_path": '/REQUIREMENTS.txt',
+        "after_install": 'packaging/postinst.sh',
+        "after_remove": 'packaging/postuninst.sh'
     }
 ```
 Generated packaged will include just one folder: */usr/*
@@ -178,7 +182,7 @@ Generated package will include two folders: */usr* with python interpreter and
 */opt/app* folder with application inside. Note that */opt* is used for
 application because *package_install_root* is not set so defaul value is used.
 
-Please be aware that althoug examples for scenarios 3 and 4 include a very
+Please be aware that although examples for scenarios 3 and 4 include a very
 specific *python_version* vdist only use its major version number (currently 2
 or 3) to know whether call python or python3 executable at *python_basedir/bin*
 folder.

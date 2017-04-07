@@ -40,6 +40,8 @@ runtime_deps = libssl1.0.0, dummy1.0.0
 compile_python = True
 python_version = 3.4.4
 output_folder = ./vdist
+after_install = packaging/postinst.sh
+after_remove = packaging/postuninst.sh
 
 [Ubuntu-package]
 profile = ubuntu-trusty
@@ -95,6 +97,8 @@ runtime_deps = libssl1.0.0, dummy1.0.0
 compile_python = True
 python_version = 3.4.4
 output_folder = ./vdist
+after_install = packaging/postinst.sh
+after_remove = packaging/postuninst.sh
 
 [Ubuntu-package]
 profile = ubuntu-trusty
@@ -120,7 +124,7 @@ offers a **manual mode** too. That mode does not use a configuration file but
 allows you to set parameters as command arguments:
 
 ```bash
-$ vdist manual --app geolocate --version 1.3.0 --source_git https://github.com/dante-signal31/geolocate,master --profile ubuntu-trusty --compile_python --python_version 3.4.4 --fpm_args '--maintainer dante.signal31@gmail.com -a native --url https://github.com/dante-signal31/geolocate --description "This program accepts any text and searchs inside every IP address." --license BSD-3 --category net' --requirements_path /REQUIREMENTS.txt --runtime_deps libssl1.0.0 dummy1.0.0 --output_folder ./dist
+$ vdist manual --app geolocate --version 1.3.0 --source_git https://github.com/dante-signal31/geolocate,master --profile ubuntu-trusty --compile_python --python_version 3.4.4 --fpm_args '--maintainer dante.signal31@gmail.com -a native --url https://github.com/dante-signal31/geolocate --description "This program accepts any text and searchs inside every IP address." --license BSD-3 --category net' --requirements_path /REQUIREMENTS.txt --runtime_deps libssl1.0.0 dummy1.0.0 --output_folder ./dist --after_install = packaging/postinst.sh --after_remove = packaging/postuninst.sh
 ```
 
 Pay attention to the point that `--fpm_args` argument is enclosed in single quotes.
@@ -176,9 +180,9 @@ builder.build()
 Here is what it does: vdist will build an OS package called 'yourapp-1.0.deb'
 from a Git repo located at https://github.com/you/yourapp, from branch 'master'
 using the vdist profile 'ubuntu-trusty' (more on vdist profiles later).
-While doing so, it will download and compile a Python interpreter, set up a
-virtualenv for your application, and installs your application's dependencies
-into the virtualenv. The whole resulting virtualenv will be wrapped up in a
+While doing so, it will download and compile a Python interpreter framework and
+installs your application's dependencies
+into that framework. The whole resulting python framework will be wrapped up in a
 package, and is the end result of the build run. Here's an example creating a
 build for two OS flavors at the same time:
 
@@ -238,7 +242,7 @@ value should be one of two things:
     * a vdist built-in profile (currently `centos7`, `ubuntu-trusty` and
     `debian-wheezy` are available)
     * a custom profile that you create yourself; see
-    [How to customize](http://vdist.readthedocs.org/en/latest/howtocustomize)
+    [How to customize](http://vdist-.readthedocs.io/en/latest/howtocustomize/)
     for instructions
 - `source` :: the argument that specifies how to get the source code to build
 from; the available source types are:
@@ -296,6 +300,18 @@ version is searched (in given '*python_basedir*' of your docker container) to be
 used. Defaults to '*2.7.9*'.
 - `requirements_path` :: the path to your pip requirements file, relative to
 your project root; this defaults to `*/requirements.txt*`.
+- `after_install` :: A script to include inside package to be run after package
+installation.
+- `before_install` :: A script to include inside package to be run before package
+installation.
+- `after_remove` :: A script to include inside package to be run after package
+removal.
+- `before_remove` :: A script to include inside package to be run before package
+removal.
+- `after_upgrade` :: A script to include inside package to be run after package
+upgrade.
+- `before_upgrade` :: A script to include inside package to be run before package
+upgrade.
 
 Here's another, more customized example.
 
@@ -375,7 +391,7 @@ builder.build()
 ```
 You can read some examples with the main vdist [use cases](usecases.md) we have
 identified. Additionally if you look in the
-[vdist examples directory](https://github.com/objectified/vdist/tree/master/examples),
+[vdist examples directory](https://github.com/dante-signal31/vdist/tree/master/examples),
 you will find even more examples.
 
 There are cases where you want to influence the way vdist behaves in your

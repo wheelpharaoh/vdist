@@ -9,7 +9,7 @@ This will happen when you're using plain Docker images from the central Docker h
 
 *Q: Why do you compile a Python interpreter from scratch? Is the OS provided interpreter not good enough?*
 
-As with your module dependencies, you want to be sure that your application is as self contained as possible, using only those versions that you trust. The Python interpreter should be no exception to this. Also since we're using virtualenv, we need to make sure that the same interpreter that was used to set up the virtualenv can still be used at runtime. To have this guarantee, the interpreter is shipped.
+As with your module dependencies, you want to be sure that your application is as self contained as possible, using only those versions that you trust. The Python interpreter should be no exception to this. 
 
 *Q: Can vdist be used to create Docker images for my application, instead of OS packages?*
 
