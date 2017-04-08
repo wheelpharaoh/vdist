@@ -301,17 +301,23 @@ used. Defaults to '*2.7.9*'.
 - `requirements_path` :: the path to your pip requirements file, relative to
 your project root; this defaults to `*/requirements.txt*`.
 - `after_install` :: A script to include inside package to be run after package
-installation.
+installation. Given path should be given relative to the root of your source
+project folder.
 - `before_install` :: A script to include inside package to be run before package
-installation.
+installation. Given path should be given relative to the root of your source
+project folder.
 - `after_remove` :: A script to include inside package to be run after package
-removal.
+removal. Given path should be given relative to the root of your source
+project folder.
 - `before_remove` :: A script to include inside package to be run before package
-removal.
+removal. Given path should be given relative to the root of your source
+project folder.
 - `after_upgrade` :: A script to include inside package to be run after package
-upgrade.
+upgrade. Given path should be given relative to the root of your source
+project folder.
 - `before_upgrade` :: A script to include inside package to be run before package
-upgrade.
+upgrade. Given path should be given relative to the root of your source
+project folder.
 
 Here's another, more customized example.
 
