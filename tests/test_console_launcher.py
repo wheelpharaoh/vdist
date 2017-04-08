@@ -164,7 +164,7 @@ DUMMY_MANUAL_ARGUMENTS = ["manual",
                           "--runtime_deps", "libssl1.0.0", "dummy1.0.0",
                           "--output_folder", DUMMY_OUTPUT_FOLDER,
                           "--after_install", 'packaging/postinst.sh',
-                          "after_remove", 'packaging/postuninst.sh']
+                          "--after_remove", 'packaging/postuninst.sh']
 
 
 @contextlib.contextmanager
