@@ -2,14 +2,6 @@
 app = vdist
 version = 1.0.0
 source_git = https://github.com/dante-signal31/${app}, master
-
-## TODO: Including package scripts does not work yet because they should
-## be shared with docker container. That means I have to include more flags
-## to set those scripts and logic to copy scripts to shared folder.
-
-## TODO: Generated packages depend on respective docker packages from linux
-## distros. I have to include those dependencies.
-
 fpm_args = --maintainer dante.signal31@gmail.com -a native --url
     https://github.com/dante-signal31/${app} --description
     "vdist (Virtualenv Distribute) is a tool that lets you build OS packages
@@ -17,16 +9,19 @@ fpm_args = --maintainer dante.signal31@gmail.com -a native --url
      isolated environment for your Python project by utilizing virtualenv. This
      means that your application will not depend on OS provided packages of
      Python modules, including their versions."
-    --license MIT --category net --after-install /packaging/debian/postinst.sh
-    --after-remove /packaging/debian/postuninst.sh
+    --license MIT --category net
 requirements_path = /REQUIREMENTS.txt
-runtime_deps = libssl1.0.0, dummy1.0.0
 compile_python = True
 python_version = 3.5.3
 output_folder = ./package_dist/
+after-install /packaging/postinst.sh
+after-remove /packaging/postuninst.sh
 
 [Ubuntu-package]
 profile = ubuntu-trusty
+runtime_deps = libssl1.0.0, docker.io
+build_deps =
 
 [Centos7-package]
 profile = centos7
+runtime_deps = openssl, docker-ce
