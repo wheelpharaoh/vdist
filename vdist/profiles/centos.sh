@@ -89,7 +89,7 @@ cd {{package_tmp_root}}
 ## code repository. Whereas you may have a folder called "lib" or "bin" that
 ## you may want to package but it doesn't come from a virtualenv. Maybe we
 ## should remove next line in a further revision.
-rm -rf bin include lib local
+# rm -rf bin include lib local
 
 # To install our application and dependencies inside our portable python
 # environment we have to run setup.py and download from Pypi using our
@@ -106,9 +106,6 @@ fi
 # Install package python dependencies inside our portable python environment.
 if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install -U pip setuptools
-    ## TODO: Try to comment these next two. I think we don't need it any longer.
-    # virtualenv -p $PYTHON_BIN .
-    # source bin/activate
     $PIP_BIN install {{pip_args}} -r $PWD{{requirements_path}}
 fi
 
@@ -126,6 +123,15 @@ cd /
 # Get rid of VCS info.
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
+
+# WARNING: Something wrong happens with "nocompile" tests in centos7.
+# I don't know why fpm call corrupts some lib in the linux container so
+# further cp command fails. This does not happen in centos6 or debian even
+# when fpm commands are the same. Any help with this issue will be welcome.
+# While this issue persists you are not going to be able to package anything
+# with centos7 template if you don't compile Python. Nevertheless I guess any
+# package built with centos6 template will be compatible with centos7 systems,
+# so I don't consider this bug as blocking or critical.
 
 # If setup==true then we have installed our application inside our portable python
 # environment, so we package that environment.
