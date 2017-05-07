@@ -17,7 +17,7 @@ def parse_arguments(args=None):
                                                      "in a clean and self "
                                                      "contained manner.\n",
                                          epilog="Follow vdist development at: "
-                                                "<https://github.com/objectified/vdist>")
+                                                "<https://github.com/dante-signal31/vdist>")
     # There is a bug in Python 3.5 argparser that makes that missing arguments
     # don't raise a "too few arguments". While that bug is finally fixed, there
     # is a workaround in:
