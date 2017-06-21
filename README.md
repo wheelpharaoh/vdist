@@ -2,4 +2,4 @@ Welcome to the home of vdist, a tool that lets you create OS packages from your 
 
 vdist should work just fine in most cases, but issues, feature requests, pull requests etc. are very welcome!
 
-The official documentation for vdist can be found on [ReadTheDocs](http://vdist-.readthedocs.io/en/latest/)
+The official documentation for vdist can be found on [ReadTheDocs](http://vdistdocs.readthedocs.io/en/latest/)

@@ -242,7 +242,7 @@ value should be one of two things:
     * a vdist built-in profile (currently `centos7`, `ubuntu-trusty` and
     `debian-wheezy` are available)
     * a custom profile that you create yourself; see
-    [How to customize](http://vdist-.readthedocs.io/en/latest/howtocustomize/)
+    [How to customize](http://vdistdocs.readthedocs.io/en/latest/howtocustomize/)
     for instructions
 - `source` :: the argument that specifies how to get the source code to build
 from; the available source types are:

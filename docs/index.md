@@ -83,4 +83,4 @@ builder.build()
 ```
 
 Read more about what vdist can do
-[here](http://vdist-.readthedocs.io/en/latest/howtouse/)
+[here](http://vdistdocs.readthedocs.io/en/latest/howtouse/)
