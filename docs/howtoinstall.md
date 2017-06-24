@@ -71,7 +71,7 @@ example:
 ```
 $ git clone https://github.com/objectified/vdist
 $ cd vdist
-$ virtualenv .
-$ . bin/activate
+$ virtualenv env
+$ source env/bin/activate
 $ pip install -r requirements.txt
 ```
