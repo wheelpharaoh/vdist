@@ -28,7 +28,7 @@ repository and install from there, type:
 ```
 $ sudo apt-get update
 $ sudo apt-get install apt-transport-https
-$ sudo echo "deb [trusted=yes] https://dl.bintray.com/dante-signal31/deb generic main" | tee -a /etc/apt/sources.list
+$ sudo echo "deb [trusted=yes] https://dl.bintray.com/dante-signal31/deb generic main" | sudo tee -a /etc/apt/sources.list
 $ sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 379CE192D401AB61
 $ sudo apt-get update
 $ sudo apt-get install vdist
