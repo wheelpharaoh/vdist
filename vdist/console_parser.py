@@ -35,6 +35,12 @@ def parse_arguments(args=None):
                                      default=None,
                                      type=_check_is_file,
                                      metavar="CONFIGURATION FILENAME")
+    automatic_subparser.add_argument("--output_script",
+                                     required=False,
+                                     help="Copy build script in output folder.",
+                                     action="store_const",
+                                     const=True,
+                                     default=False)
     manual_subparser = subparsers.add_parser("manual",
                                              help="Manual configuration. "
                                                   "Parameters are going to be "
@@ -137,6 +143,13 @@ def parse_arguments(args=None):
                                   help="Folder where generated packages should "
                                        "be placed.",
                                   metavar="OUTPUT_FOLDER")
+    manual_subparser.add_argument("--output_script",
+                                  required=False,
+                                  help="Copy build script in output folder.",
+                                  action="store_const",
+                                  const=True,
+                                  default=False)
+
     # WARNING: Keep package scripts arguments names similar to fpm arguments for
     # scripts. Arguments names from here are directly used as fpm arguments
     # names.

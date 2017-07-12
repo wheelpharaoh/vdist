@@ -1,8 +1,10 @@
 import contextlib
 import copy
 import os.path
+import pytest
 import sys
 import tempfile
+
 
 import vdist.builder as builder
 import vdist.console_parser as console_parser
@@ -105,8 +107,12 @@ UBUNTU_ARGPARSED_ARGUMENTS = {
     "runtime_deps": ["libssl1.0.0", "dummy1.0.0"],
     "output_folder": DUMMY_OUTPUT_FOLDER,
     "after_install": 'packaging/postinst.sh',
-    "after_remove": 'packaging/postuninst.sh'
+    "after_remove": 'packaging/postuninst.sh',
+    "output_script": False
 }
+
+UBUNTU_ARGPARSED_ARGUMENTS_OUTPUT_SCRIPT = UBUNTU_ARGPARSED_ARGUMENTS.copy()
+UBUNTU_ARGPARSED_ARGUMENTS_OUTPUT_SCRIPT["output_script"] = True
 
 CORRECT_UBUNTU_PARAMETERS = {
     "app": 'geolocate',
@@ -165,6 +171,8 @@ DUMMY_MANUAL_ARGUMENTS = ["manual",
                           "--output_folder", DUMMY_OUTPUT_FOLDER,
                           "--after_install", 'packaging/postinst.sh',
                           "--after_remove", 'packaging/postuninst.sh']
+DUMMY_MANUAL_ARGUMENTS_OUTPUT_SCRIPT = list(DUMMY_MANUAL_ARGUMENTS)
+DUMMY_MANUAL_ARGUMENTS_OUTPUT_SCRIPT.append("--output_script")
 
 
 @contextlib.contextmanager
@@ -187,10 +195,22 @@ def test_configuration_file_read():
 def test_parse_arguments():
     # Batch mode
     parsed_arguments = console_parser.parse_arguments(["batch", "/etc/passwd"])
-    assert parsed_arguments["configuration_file"] == "/etc/passwd"
+    assert parsed_arguments["configuration_file"] == "/etc/passwd" \
+           and not parsed_arguments["output_script"]
+
     # Manual mode
     parsed_arguments = console_parser.parse_arguments(DUMMY_MANUAL_ARGUMENTS)
-    assert parsed_arguments == UBUNTU_ARGPARSED_ARGUMENTS
+    assert parsed_arguments == UBUNTU_ARGPARSED_ARGUMENTS \
+           and not parsed_arguments["output_script"]
+    # Output script
+    parsed_arguments = console_parser.parse_arguments(["batch",
+                                                       "/etc/passwd",
+                                                       "--output_script"])
+    assert parsed_arguments["configuration_file"] == "/etc/passwd" \
+           and parsed_arguments["output_script"]
+    parsed_arguments = console_parser.parse_arguments(DUMMY_MANUAL_ARGUMENTS_OUTPUT_SCRIPT)
+    assert parsed_arguments == UBUNTU_ARGPARSED_ARGUMENTS_OUTPUT_SCRIPT \
+           and parsed_arguments["output_script"]
 
 
 def test_move_package_to_output_folder():
@@ -217,12 +237,14 @@ def _get_temporary_directory_context_manager():
     return temporary_directory
 
 
+@pytest.mark.slow
 def test_build_package_batch():
     with _create_dummy_configuration_file(DUMMY_CONFIGURATION_TEXT) as config_file:
         configurations = configuration.read(config_file.name)
         _generate_packages(configurations)
 
 
+@pytest.mark.slow
 def test_build_package_manual():
     console_arguments = console_parser.parse_arguments(DUMMY_MANUAL_ARGUMENTS)
     configurations = vdist_launcher._get_build_configurations(console_arguments)
@@ -261,7 +283,7 @@ class Error(Exception):
 class UnknownProfile(Error):
 
     def __init__(self, tried_profile):
-        super().__init__()
+        super(UnknownProfile, self).__init__()
         self.messsage = "Tried profile: {0}".format(tried_profile)
 
 
