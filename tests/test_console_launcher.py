@@ -82,7 +82,7 @@ profile = ubuntu-trusty
 profile = centos7
 """
 
-DUMMY_OUTPUT_FOLDER = "/tmp/vdist"
+DUMMY_OUTPUT_FOLDER = "/tmp/vdist-tests"
 
 UBUNTU_ARGPARSED_ARGUMENTS = {
     "mode": "manual",
