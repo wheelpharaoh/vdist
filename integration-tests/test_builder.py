@@ -3,7 +3,12 @@ import re
 import subprocess
 import tempfile
 
-from vdist.builder import Builder
+import tests.test_console_launcher as test_console
+# import test_console_launcher as test_console
+
+import vdist.configuration as configuration
+import vdist.defaults as defaults
+import vdist.builder as builder
 from vdist.source import git, git_directory, directory
 
 DEB_COMPILE_FILTER = [r'[^\.]', r'\./$', r'\./usr/', r'\./opt/$']
@@ -47,9 +52,9 @@ def _purge_list(original_list, purgables):
 
 
 def _call_builder(builder_parameters):
-    builder = Builder()
-    builder.add_build(**builder_parameters)
-    builder.build()
+    _builder = builder.Builder()
+    _builder.add_build(**builder_parameters)
+    _builder.build()
 
 
 def _generate_rpm(builder_parameters, centos_version):
@@ -122,6 +127,23 @@ def test_generate_rpm_from_git_centos6():
 
 def test_generate_rpm_from_git_centos7():
     _generate_rpm_from_git("centos7")
+
+
+def test_output_script():
+    _configuration = configuration.Configuration(test_console.UBUNTU_ARGPARSED_ARGUMENTS_OUTPUT_SCRIPT)
+    _builder = builder._prepare_build(_configuration)
+    _builder.copy_script_to_output_folder(_configuration)
+    copied_script_path = _get_copied_script_path(_configuration, _builder)
+    assert os.path.isfile(copied_script_path)
+
+
+def _get_copied_script_path(_configuration, _builder):
+    script_file_name = builder._get_script_output_filename(_configuration)
+    script_output_folder = os.path.join(_configuration.output_folder,
+                                        builder._get_generated_package_folder(_configuration,
+                                                                              _builder.build.build_tmp_dir))
+    copied_script_path = os.path.join(script_output_folder, script_file_name)
+    return copied_script_path
 
 
 # Scenarios to test:
