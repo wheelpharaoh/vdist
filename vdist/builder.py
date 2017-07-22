@@ -17,8 +17,9 @@ import vdist.buildmachine as buildmachine
 
 def build_package(_configuration):
     builder = _prepare_build(_configuration)
-    builder.copy_script_to_output_folder(_configuration)
-    builder.build()
+    if _configuration.output_script:
+        builder.copy_script_to_output_folder(_configuration)
+    builder.start_build()
     builder.move_package_to_output_folder(_configuration)
 
 
@@ -407,7 +408,7 @@ class Builder(object):
         self._load_profiles()
         return self.profiles
 
-    def build(self):
+    def start_build(self):
         self._create_vdist_dir()
         # self._load_profiles()
         # self._start_build_basedir()

@@ -4,7 +4,6 @@ import subprocess
 import tempfile
 
 import tests.test_console_launcher as test_console
-# import test_console_launcher as test_console
 
 import vdist.configuration as configuration
 import vdist.defaults as defaults
@@ -54,7 +53,9 @@ def _purge_list(original_list, purgables):
 def _call_builder(builder_parameters):
     _builder = builder.Builder()
     _builder.add_build(**builder_parameters)
-    _builder.build()
+    _builder.get_available_profiles()
+    _builder.create_build_folder_tree()
+    _builder.start_build()
 
 
 def _generate_rpm(builder_parameters, centos_version):
@@ -76,18 +77,14 @@ def _generate_rpm(builder_parameters, centos_version):
 
 def _generate_deb(builder_parameters):
     _call_builder(builder_parameters)
-    homedir = os.path.expanduser('~')
+    build_dir = defaults.BUILD_BASEDIR
     filename_prefix = "-".join([builder_parameters["app"],
                                 builder_parameters["version"]])
     deb_filename_prefix = "_".join([builder_parameters["app"],
                                     builder_parameters["version"]])
-    target_file = os.path.join(
-        homedir,
-        '.vdist',
-        'dist',
-        "".join([filename_prefix, "-ubuntu-trusty"]),
-        "".join([deb_filename_prefix, '_amd64.deb']),
-    )
+    target_file = os.path.join(build_dir,
+                               "".join([filename_prefix, "-ubuntu-trusty"]),
+                               "".join([deb_filename_prefix, '_amd64.deb']))
     assert os.path.isfile(target_file)
     assert os.path.getsize(target_file) > 0
     return target_file
@@ -167,7 +164,7 @@ def test_generate_deb_from_git_setup_compile():
         "version": '1.3.0',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
-            branch='master'
+            branch='vdist_tests'
         ),
         "profile": 'ubuntu-trusty',
         "compile_python": True,
@@ -196,7 +193,7 @@ def _generate_rpm_from_git_setup_compile(centos_version):
         "version": '1.3.0',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
-            branch='master'
+            branch='vdist_tests'
         ),
         "profile": centos_version,
         "compile_python": True,
@@ -297,7 +294,7 @@ def test_generate_deb_from_git_setup_nocompile():
         "version": '1.3.0',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
-            branch='master'
+            branch='vdist_tests'
         ),
         "profile": 'ubuntu-trusty',
         "compile_python": False,
@@ -336,7 +333,7 @@ def _generate_rpm_from_git_setup_nocompile(centos_version):
         "version": '1.3.0',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
-            branch='master'
+            branch='vdist_tests'
         ),
         "profile": centos_version,
         "compile_python": False,
@@ -486,39 +483,35 @@ def test_generate_rpm_from_git_suffixed_centos7():
 
 
 def test_generate_deb_from_git_directory():
-    tempdir = tempfile.gettempdir()
-    checkout_dir = os.path.join(tempdir, 'vdist')
+    with tempfile.TemporaryDirectory() as temp_dir:
+        git_p = subprocess.Popen(
+            ['git', 'clone',
+             'https://github.com/objectified/vdist',
+             temp_dir])
+        git_p.communicate()
 
-    git_p = subprocess.Popen(
-        ['git', 'clone',
-         'https://github.com/objectified/vdist',
-         checkout_dir])
-    git_p.communicate()
-
-    builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
-                          "version": '1.0',
-                          "source": git_directory(path=checkout_dir,
-                                                  branch='master'),
-                          "profile": 'ubuntu-trusty'}
-    _ = _generate_deb(builder_parameters)
+        builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
+                              "version": '1.0',
+                              "source": git_directory(path=temp_dir,
+                                                      branch='master'),
+                              "profile": 'ubuntu-trusty'}
+        _ = _generate_deb(builder_parameters)
 
 
 def _generate_rpm_from_git_directory(centos_version):
-    tempdir = tempfile.gettempdir()
-    checkout_dir = os.path.join(tempdir, 'vdist')
+    with tempfile.TemporaryDirectory() as temp_dir:
+        git_p = subprocess.Popen(
+            ['git', 'clone',
+             'https://github.com/objectified/vdist',
+             temp_dir])
+        git_p.communicate()
 
-    git_p = subprocess.Popen(
-        ['git', 'clone',
-         'https://github.com/objectified/vdist',
-         checkout_dir])
-    git_p.communicate()
-
-    builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
-                          "version": '1.0',
-                          "source": git_directory(path=checkout_dir,
-                                                  branch='master'),
-                          "profile": centos_version}
-    _ = _generate_rpm(builder_parameters, centos_version)
+        builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
+                              "version": '1.0',
+                              "source": git_directory(path=temp_dir,
+                                                      branch='master'),
+                              "profile": centos_version}
+        _ = _generate_rpm(builder_parameters, centos_version)
 
 
 def test_generate_rpm_from_git_directory_centos6():
@@ -530,37 +523,33 @@ def test_generate_rpm_from_git_directory_centos7():
 
 
 def test_generate_deb_from_directory():
-    tempdir = tempfile.gettempdir()
-    checkout_dir = os.path.join(tempdir, 'vdist')
+    with tempfile.TemporaryDirectory() as temp_dir:
+        git_p = subprocess.Popen(
+            ['git', 'clone',
+             'https://github.com/objectified/vdist',
+             temp_dir])
+        git_p.communicate()
 
-    git_p = subprocess.Popen(
-        ['git', 'clone',
-         'https://github.com/objectified/vdist',
-         checkout_dir])
-    git_p.communicate()
-
-    builder_parameters = {"app": 'vdist-test-generate-deb-from-dir',
-                          "version": '1.0',
-                          "source": directory(path=checkout_dir, ),
-                          "profile": 'ubuntu-trusty'}
-    _ = _generate_deb(builder_parameters)
+        builder_parameters = {"app": 'vdist-test-generate-deb-from-dir',
+                              "version": '1.0',
+                              "source": directory(path=temp_dir, ),
+                              "profile": 'ubuntu-trusty'}
+        _ = _generate_deb(builder_parameters)
 
 
 def _generate_rpm_from_directory(centos_version):
-    tempdir = tempfile.gettempdir()
-    checkout_dir = os.path.join(tempdir, 'vdist')
+    with tempfile.TemporaryDirectory() as temp_dir:
+        git_p = subprocess.Popen(
+            ['git', 'clone',
+             'https://github.com/objectified/vdist',
+             temp_dir])
+        git_p.communicate()
 
-    git_p = subprocess.Popen(
-        ['git', 'clone',
-         'https://github.com/objectified/vdist',
-         checkout_dir])
-    git_p.communicate()
-
-    builder_parameters = {"app": 'vdist-test-generate-deb-from-dir',
-                          "version": '1.0',
-                          "source": directory(path=checkout_dir, ),
-                          "profile": centos_version}
-    _ = _generate_rpm(builder_parameters, centos_version)
+        builder_parameters = {"app": 'vdist-test-generate-deb-from-dir',
+                              "version": '1.0',
+                              "source": directory(path=temp_dir, ),
+                              "profile": centos_version}
+        _ = _generate_rpm(builder_parameters, centos_version)
 
 
 def test_generate_rpm_from_directory_centos6():
