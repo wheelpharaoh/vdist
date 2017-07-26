@@ -161,17 +161,20 @@ def _get_copied_script_path(_configuration, _builder):
 def test_generate_deb_from_git_setup_compile():
     builder_parameters = {
         "app": 'geolocate',
-        "version": '1.3.0',
+        "version": '1.4.1',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
             branch='vdist_tests'
         ),
         "profile": 'ubuntu-trusty',
         "compile_python": True,
-        "python_version": '3.4.4',
+        "python_version": '3.5.3',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ],
+        "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
+                       "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
+                       "libffi-dev"],
+        "runtime_deps": ["libssl1.0.0", "python3-dbus", "gnome-keyring"],
         "after_install": 'packaging/postinst.sh',
         "after_remove": 'packaging/postuninst.sh'
     }
@@ -190,17 +193,20 @@ def test_generate_deb_from_git_setup_compile():
 def _generate_rpm_from_git_setup_compile(centos_version):
     builder_parameters = {
         "app": 'geolocate',
-        "version": '1.3.0',
+        "version": '1.4.1',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
             branch='vdist_tests'
         ),
         "profile": centos_version,
         "compile_python": True,
-        "python_version": '3.4.4',
+        "python_version": '3.5.3',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ],
+        "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
+                       "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
+                       "libffi-dev"],
+        "runtime_deps": ["libssl1.0.0", "python3-dbus", "gnome-keyring"],
         "after_install": 'packaging/postinst.sh',
         "after_remove": 'packaging/postuninst.sh'
     }
@@ -214,13 +220,14 @@ def _generate_rpm_from_git_setup_compile(centos_version):
     geolocate_launcher = "/opt/geolocate/bin/geolocate"
     assert geolocate_launcher in file_list
 
-
-def test_generate_rpm_from_git_setup_compile_centos6():
-    _generate_rpm_from_git_setup_compile("centos6")
-
-
-def test_generate_rpm_from_git_setup_compile_centos7():
-    _generate_rpm_from_git_setup_compile("centos7")
+# TODO: Geolocate has no support for centos, so I need to find another project
+# suitable for packaging.
+# def test_generate_rpm_from_git_setup_compile_centos6():
+#     _generate_rpm_from_git_setup_compile("centos6")
+#
+#
+# def test_generate_rpm_from_git_setup_compile_centos7():
+#     _generate_rpm_from_git_setup_compile("centos7")
 
 
 # Scenario 2.- Project not containing a setup.py and compiles Python -> package
@@ -291,14 +298,14 @@ def test_generate_rpm_from_git_nosetup_compile_centos7():
 def test_generate_deb_from_git_setup_nocompile():
     builder_parameters = {
         "app": 'geolocate',
-        "version": '1.3.0',
+        "version": '1.4.1',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
             branch='vdist_tests'
         ),
         "profile": 'ubuntu-trusty',
         "compile_python": False,
-        "python_version": '3.4.4',
+        "python_version": '3.5.3',
         # Lets suppose custom python package is already installed and its root
         # folder is /usr. Actually I'm using default installed python3
         # package, it's is going to be a huge package but this way don't
@@ -306,7 +313,10 @@ def test_generate_deb_from_git_setup_nocompile():
         "python_basedir": '/usr',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ],
+        "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
+                       "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
+                       "libffi-dev"],
+        "runtime_deps": ["libssl1.0.0", "python3-dbus", "gnome-keyring"],
         "after_install": 'packaging/postinst.sh',
         "after_remove": 'packaging/postuninst.sh'
     }
@@ -330,7 +340,7 @@ def test_generate_deb_from_git_setup_nocompile():
 def _generate_rpm_from_git_setup_nocompile(centos_version):
     builder_parameters = {
         "app": 'geolocate',
-        "version": '1.3.0',
+        "version": '1.4.1',
         "source": git(
             uri='https://github.com/dante-signal31/geolocate',
             branch='vdist_tests'
@@ -345,7 +355,10 @@ def _generate_rpm_from_git_setup_nocompile(centos_version):
         "python_basedir": '/usr',
         "fpm_args": FPM_ARGS,
         "requirements_path": '/REQUIREMENTS.txt',
-        "runtime_deps": ["libssl1.0.0", ],
+        "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
+                       "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
+                       "libffi-dev"],
+        "runtime_deps": ["libssl1.0.0", "python3-dbus", "gnome-keyring"],
         "after_install": 'packaging/postinst.sh',
         "after_remove": 'packaging/postuninst.sh'
     }
