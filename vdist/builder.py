@@ -27,6 +27,7 @@ def _prepare_build(_configuration):
     builder = _generate_builder(_configuration)
     builder.get_available_profiles()
     builder.create_build_folder_tree()
+    builder.populate_build_folder_tree()
     _create_output_folder(_configuration)
     return builder
 
@@ -320,6 +321,7 @@ class Builder(object):
             local_gid=os.getgid(),
             project_root=build.get_project_root_from_source(),
             shared_dir=defaults.SHARED_DIR,
+            scratch_folder_name = defaults.SCRATCH_DIR,
             # scratch_dir=scratch_dir,
             **build.__dict__
         )
@@ -337,10 +339,10 @@ class Builder(object):
             f.write(script)
         os.chmod(path, 0o777)
 
-    def _populate_scratch_dir(self, scratch_dir, build):
+    def _populate_scratch_dir(self, build):
         # write rendered build script to scratch dir
         self._write_build_script(
-            os.path.join(scratch_dir, defaults.SCRATCH_BUILDSCRIPT_NAME),
+            os.path.join(build.scratch_dir, defaults.SCRATCH_BUILDSCRIPT_NAME),
             self._render_template(build)
         )
 
@@ -348,7 +350,7 @@ class Builder(object):
         if build.use_local_pip_conf:
             shutil.copytree(
                 os.path.join(os.path.expanduser('~'), '.pip'),
-                os.path.join(scratch_dir, '.pip')
+                os.path.join(build.scratch_dir, '.pip')
             )
 
         # local source type, copy local dir to scratch dir
@@ -360,7 +362,7 @@ class Builder(object):
                 subdir = os.path.basename(build.source['path'])
                 shutil.copytree(
                     build.source['path'].rstrip('/'),
-                    os.path.join(scratch_dir, subdir)
+                    os.path.join(build.scratch_dir, subdir)
                 )
 
     def _create_build_dir(self, build):
@@ -377,8 +379,8 @@ class Builder(object):
         scratch_dir = os.path.join(build_dir, defaults.SCRATCH_DIR)
         os.mkdir(scratch_dir)
 
-        # write necessary stuff to scratch_dir
-        self._populate_scratch_dir(scratch_dir, build)
+        # # write necessary stuff to scratch_dir
+        # self._populate_scratch_dir(scratch_dir, build)
 
         return build_dir, scratch_dir
 
@@ -432,6 +434,9 @@ class Builder(object):
         # for t in threads:
         #     t.join()
 
+    def populate_build_folder_tree(self):
+        self._populate_scratch_dir(self.build)
+
     def create_build_folder_tree(self):
         self._start_build_basedir()
         self._start_build_folders()
@@ -453,9 +458,9 @@ class Builder(object):
         shutil.copy(script_filepath, script_output_filepath)
 
     def move_package_to_output_folder(self, _configuration):
-        package_folder = _get_generated_package_folder(_configuration,
-                                                       self.build.build_tmp_dir)
-        _move_generated_package(_configuration, package_folder)
+        # package_folder = _get_generated_package_folder(_configuration,
+        #                                                self.build.build_tmp_dir)
+        _move_generated_package(_configuration, self.build.build_tmp_dir)
 
 
 class BuildProfileNotFoundException(Exception):

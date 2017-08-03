@@ -13,5 +13,7 @@ SCRATCH_DIR = 'scratch'
 SHARED_DIR = '/work'
 PACKAGE_INSTALL_ROOT = PYTHON_BASEDIR
 PACKAGE_TMP_ROOT = '/tmp'
+OUTPUT_FOLDER = "./"
+OUTPUT_SCRIPT = False
 
 PYTHON3_INTERPRETER = True if sys.version_info[0] == 3 else False

@@ -5,15 +5,13 @@ import pytest
 import sys
 import tempfile
 
-
+import testing_tools
 import vdist.builder as builder
 import vdist.console_parser as console_parser
 import vdist.configuration as configuration
 import vdist.source as source
 import vdist.vdist_launcher as vdist_launcher
 
-if sys.version_info[0] != 3:
-    from testing_tools import TemporaryDirectory as OwnTemporaryDirectory
 
 # Python 2.x ConfigParser lacks of extended interpolation support and its
 # tag format changes, so you should alter your config text depending whether
@@ -214,7 +212,7 @@ def test_parse_arguments():
 
 
 def test_move_package_to_output_folder():
-    temporary_directory = _get_temporary_directory_context_manager()
+    temporary_directory = testing_tools.get_temporary_directory_context_manager()
     with temporary_directory() as tempdir:
         package_folder = os.path.join(tempdir, DUMMY_PACKAGE_NAME)
         os.mkdir(package_folder)
@@ -227,14 +225,6 @@ def test_move_package_to_output_folder():
             correct_package = os.path.join(DUMMY_OUTPUT_FOLDER,
                                            dummy_package_name)
             assert os.path.isfile(correct_package)
-
-
-def _get_temporary_directory_context_manager():
-    if sys.version_info[0] == 3:
-        temporary_directory = tempfile.TemporaryDirectory
-    else:
-        temporary_directory = OwnTemporaryDirectory
-    return temporary_directory
 
 
 @pytest.mark.slow

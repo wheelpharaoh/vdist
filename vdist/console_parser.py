@@ -10,6 +10,7 @@ def _check_is_file(_string):
                                          "not exists.".format(_string))
 
 
+# TODO: Some defaults are redundant with defaults at object creation. Fix it.
 def parse_arguments(args=None):
     arg_parser = argparse.ArgumentParser(description="A tool that lets you "
                                                      "create OS packages from "

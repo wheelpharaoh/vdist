@@ -8,6 +8,7 @@ if sys.version_info[0] == 3:
 else:
     import ConfigParser as configparser
 
+import vdist.defaults as defaults
 import vdist.source as source
 
 LISTABLE_ARGUMENTS = {"source_git", "source_git_directory", "runtime_deps",
@@ -25,8 +26,10 @@ PROCESSABLE_ARGUMENTS |= LONG_TEXT_ARGUMENTS
 class Configuration(object):
 
     def __init__(self, arguments):
-        self.output_folder = arguments.get("output_folder", None)
-        self.output_script = arguments.get("output_script", False)
+        self.output_folder = arguments.get("output_folder",
+                                           defaults.OUTPUT_FOLDER)
+        self.output_script = arguments.get("output_script",
+                                           defaults.OUTPUT_SCRIPT)
         self.builder_parameters = {key: value for key, value in arguments.items()
                                    if key not in PROCESSABLE_ARGUMENTS and
                                    key not in USELESS_ARGUMENTS}
