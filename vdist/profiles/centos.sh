@@ -56,7 +56,7 @@ cd {{package_tmp_root}}
 {% elif source.type in ['directory', 'git_directory'] %}
     # Place application files inside temporary folder after copying it from
     # local folder.
-    cp -r {{scratch_dir}}/{{project_root}} .
+    cp -r {{shared_dir}}/{{scratch_folder_name}}/{{project_root}} .
     cd {{package_tmp_root}}/{{project_root}}
 
     {% if source.type == 'git_directory' %}
@@ -74,8 +74,8 @@ cd {{package_tmp_root}}
     cp -r {{scratch_dir}}/.pip ~
 {% endif %}
 
-# When working_dir is set, assume that is the base and remove the rest.
 {% if working_dir %}
+    # When working_dir is set, assume that is the base and remove the rest
     mv {{working_dir}} {{package_tmp_root}} && rm -rf {{package_tmp_root}}/{{project_root}}
     cd {{package_tmp_root}}/{{working_dir}}
 

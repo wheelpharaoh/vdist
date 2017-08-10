@@ -14,7 +14,7 @@ from vdist.source import git, git_directory, directory
 DEB_COMPILE_FILTER = [r'[^\.]', r'\./$', r'\./usr/', r'\./opt/$']
 DEB_NOCOMPILE_FILTER = [r'[^\.]', r'^\.\.', r'\./$', r'^\.$', r'\./opt/$']
 
-FPM_ARGS = '--maintainer dante.signal31@gmail.com -a native --url ' \
+FPM_ARGS_GEOLOCATE = '--maintainer dante.signal31@gmail.com -a native --url ' \
            'https://github.com/dante-signal31/geolocate --description ' \
            '"This program accepts any text and searchs inside every IP' \
            ' address. With each of those IP addresses, ' \
@@ -25,6 +25,15 @@ FPM_ARGS = '--maintainer dante.signal31@gmail.com -a native --url ' \
            ' used in console with pipes and redirections along with ' \
            'applications like traceroute, nslookup, etc.' \
            ' " --license BSD-3 --category net '
+FPM_ARGS_VDIST = '--maintainer dante.signal31@gmail.com -a native ' \
+                 '--url https://github.com/dante-signal31/${app} ' \
+                 '--description "vdist (Virtualenv Distribute) is a ' \
+                 'tool that lets you build OS packages from your ' \
+                 'Python applications, while aiming to build an isolated ' \
+                 'environment for your Python project by utilizing ' \
+                 'virtualenv. This means that your application will ' \
+                 'not depend on OS provided packages of Python modules, ' \
+                 'including their versions." --license MIT --category net'
 
 temporary_directory = testing_tools.get_temporary_directory_context_manager()
 
@@ -176,7 +185,7 @@ def test_generate_deb_from_git_setup_compile():
             "profile": 'ubuntu-trusty',
             "compile_python": True,
             "python_version": '3.5.3',
-            "fpm_args": FPM_ARGS,
+            "fpm_args": FPM_ARGS_GEOLOCATE,
             "requirements_path": '/REQUIREMENTS.txt',
             "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
                            "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
@@ -201,21 +210,18 @@ def test_generate_deb_from_git_setup_compile():
 def _generate_rpm_from_git_setup_compile(centos_version):
     with temporary_directory() as output_dir:
         builder_parameters = {
-            "app": 'geolocate',
-            "version": '1.4.1',
+            "app": 'vdist',
+            "version": '1.1.0',
             "source": git(
-                uri='https://github.com/dante-signal31/geolocate',
+                uri='https://github.com/dante-signal31/vdist',
                 branch='vdist_tests'
             ),
             "profile": centos_version,
             "compile_python": True,
             "python_version": '3.5.3',
-            "fpm_args": FPM_ARGS,
+            "fpm_args": FPM_ARGS_VDIST,
             "requirements_path": '/REQUIREMENTS.txt',
-            "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
-                           "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
-                           "libffi-dev"],
-            "runtime_deps": ["libssl1.0.0", "python3-dbus", "gnome-keyring"],
+            "runtime_deps": ["openssl", "docker-ce"],
             "after_install": 'packaging/postinst.sh',
             "after_remove": 'packaging/postuninst.sh',
             "output_folder": output_dir
@@ -223,21 +229,19 @@ def _generate_rpm_from_git_setup_compile(centos_version):
         target_file = _generate_rpm(builder_parameters, centos_version)
         file_list = _read_rpm_contents(target_file)
         # At this point only a folder should remain if everything is correct.
-        correct_install_path = "/opt/geolocate"
+        correct_install_path = "/opt/vdist"
         assert all((True if correct_install_path in file_entry else False
                     for file_entry in file_list))
-        # Geolocate launcher should be in bin folder too.
-        geolocate_launcher = "/opt/geolocate/bin/geolocate"
-        assert geolocate_launcher in file_list
+        # vdist launcher should be in bin folder too.
+        vdist_launcher = "/opt/vdist/bin/vdist"
+        assert vdist_launcher in file_list
 
-# TODO: Geolocate has no support for centos, so I need to find another project
-# suitable for packaging.
-# def test_generate_rpm_from_git_setup_compile_centos6():
-#     _generate_rpm_from_git_setup_compile("centos6")
-#
-#
-# def test_generate_rpm_from_git_setup_compile_centos7():
-#     _generate_rpm_from_git_setup_compile("centos7")
+def test_generate_rpm_from_git_setup_compile_centos6():
+    _generate_rpm_from_git_setup_compile("centos6")
+
+
+def test_generate_rpm_from_git_setup_compile_centos7():
+    _generate_rpm_from_git_setup_compile("centos7")
 
 
 # Scenario 2.- Project not containing a setup.py and compiles Python -> package
@@ -326,7 +330,7 @@ def test_generate_deb_from_git_setup_nocompile():
             # package, it's is going to be a huge package but this way don't
             # need a private package repository.
             "python_basedir": '/usr',
-            "fpm_args": FPM_ARGS,
+            "fpm_args": FPM_ARGS_GEOLOCATE,
             "requirements_path": '/REQUIREMENTS.txt',
             "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
                            "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",
@@ -370,7 +374,7 @@ def _generate_rpm_from_git_setup_nocompile(centos_version):
             # package, it's is going to be a huge package but this way don't
             # need a private package repository.
             "python_basedir": '/usr',
-            "fpm_args": FPM_ARGS,
+            "fpm_args": FPM_ARGS_GEOLOCATE,
             "requirements_path": '/REQUIREMENTS.txt',
             "build_deps": ["python3-all-dev", "build-essential", "libssl-dev",
                            "pkg-config", "libdbus-glib-1-dev", "gnome-keyring",

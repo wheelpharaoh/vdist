@@ -63,7 +63,6 @@ cd {{package_tmp_root}}
     echo "invalid source type, exiting."
     exit 1
 
-
 {% endif %}
 
 {% if use_local_pip_conf %}
@@ -75,7 +74,7 @@ cd {{package_tmp_root}}
     mv {{working_dir}} {{package_tmp_root}} && rm -rf {{package_tmp_root}}/{{project_root}}
     cd {{package_tmp_root}}/{{working_dir}}
 
-    # Reset project_root
+    # Reset project_root.
     {% set project_root = working_dir %}
 {% endif %}
 
@@ -85,7 +84,7 @@ cd {{package_tmp_root}}
 ## code repository. Whereas you may have a folder called "lib" or "bin" that
 ## you may want to package but it doesn't come from a virtualenv. Maybe we
 ## should remove next line in a further revision.
-rm -rf bin include lib local
+# rm -rf bin include lib local
 
 # To install our application and dependencies inside our portable python
 # environment we have to run setup.py and download from Pypi using our
@@ -93,6 +92,7 @@ rm -rf bin include lib local
 if [[ ${PYTHON_VERSION:0:1} == "2" ]]; then
     PYTHON_BIN="$PYTHON_BASEDIR/bin/python"
     PIP_BIN="$PYTHON_BASEDIR/bin/pip"
+    $PYTHON_BIN -m ensurepip
 else
     PYTHON_BIN="$PYTHON_BASEDIR/bin/python3"
     PIP_BIN="$PYTHON_BASEDIR/bin/pip3"
@@ -115,7 +115,7 @@ fi
 
 cd /
 
-# Get rid of VCS info
+# Get rid of VCS info.
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
 

@@ -86,7 +86,7 @@ cd {{package_tmp_root}}
 {% elif source.type in ['directory', 'git_directory'] %}
     # Place application files inside temporary folder after copying it from
     # local folder.
-    cp -r {{scratch_dir}}/{{project_root}} .
+    cp -r {{shared_dir}}/{{scratch_folder_name}}/{{project_root}} .
     cd {{package_tmp_root}}/{{project_root}}
 
     {% if source.type == 'git_directory' %}
@@ -104,12 +104,12 @@ cd {{package_tmp_root}}
     cp -r {{scratch_dir}}/.pip ~
 {% endif %}
 
-# When working_dir is set, assume that is the base and remove the rest
 {% if working_dir %}
+    # When working_dir is set, assume that is the base and remove the rest
     mv {{working_dir}} {{package_tmp_root}} && rm -rf {{package_tmp_root}}/{{project_root}}
     cd {{package_tmp_root}}/{{working_dir}}
 
-    # Reset project_root
+    # Reset project_root.
     {% set project_root = working_dir %}
 {% endif %}
 
@@ -119,7 +119,7 @@ cd {{package_tmp_root}}
 ## code repository. Whereas you may have a folder called "lib" or "bin" that
 ## you may want to package but it doesn't come from a virtualenv. Maybe we
 ## should remove next line in a further revision.
-rm -rf bin include lib local
+# rm -rf bin include lib local
 
 # To install our application and dependencies inside our portable python
 # environment we have to run setup.py and download from Pypi using our
@@ -136,9 +136,6 @@ fi
 # Install package python dependencies inside our portable python environment.
 if [ -f "$PWD{{requirements_path}}" ]; then
     $PIP_BIN install -U pip setuptools
-    ## TODO: Try to comment these next two. I think we don't need it any longer.
-    # virtualenv -p $PYTHON_BIN .
-    # source bin/activate
     $PIP_BIN install {{pip_args}} -r $PWD{{requirements_path}}
 fi
 
@@ -153,7 +150,7 @@ fi
 
 cd /
 
-# Get rid of VCS info
+# Get rid of VCS info.
 find {{package_tmp_root}} -type d -name '.git' -print0 | xargs -0 rm -rf
 find {{package_tmp_root}} -type d -name '.svn' -print0 | xargs -0 rm -rf
 
