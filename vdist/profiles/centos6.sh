@@ -1,41 +1,14 @@
 #!/bin/bash -x
 PYTHON_VERSION="{{python_version}}"
 PYTHON_BASEDIR="{{python_basedir}}"
-CONTAINER_PYTHON3_VERSION="5"
 
 # Fail on error
 set -e
 
-# Install general prerequisites
-yum -y update
-yum groupinstall -y "Development Tools"
-yum install -y ruby-devel curl libyaml-devel which tar rpm-build rubygems git python-setuptools zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc gcc-c++
-yum install -y yum-utils
-
-# Python 3 RPM installation to get basic support in that Python version.
-# Idea taken from: http://stackoverflow.com/questions/8087184/problems-installing-python3-on-rhel
-yum install -y https://centos6.iuscommunity.org/ius-release.rpm
-yum install -y python3${CONTAINER_PYTHON3_VERSION}u python3${CONTAINER_PYTHON3_VERSION}u-pip
-ln -s /usr/bin/python3.$CONTAINER_PYTHON3_VERSION /usr/bin/python3
-ln -s /usr/bin/pip3.$CONTAINER_PYTHON3_VERSION /usr/bin/pip3
-
-# Install build dependencies.
 {% if build_deps %}
+# Install build dependencies.
 yum install -y {{build_deps|join(' ')}}
 {% endif %}
-
-# Only install when needed, to save time with
-# pre-provisioned containers
-if [ ! -f /usr/bin/fpm ]; then
-    # Latest fpm fails to install in Centos 6.
-    #
-    # gem install fpm
-    #
-    # Applied workaround from:
-    #   https://github.com/jordansissel/fpm/issues/1192
-    #
-    gem install fpm --no-ri --no-rdoc || gem install fpm --no-ri --no-rdoc --version 1.4.0
-fi
 
 # Install prerequisites
 ## TODO: Try to comment this. I think we don't need it any longer.

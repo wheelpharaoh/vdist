@@ -179,7 +179,8 @@ class Build(object):
         self.profile = profile
         # I don't like method chaining but I didn't get it to work with a
         # auxiliary variable.
-        self.fpm_args = self._append_scripts_to_args(locals()).format(**os.environ)
+        # self.fpm_args = self._append_scripts_to_args(locals()).format(**os.environ)
+        self.fpm_args = self._append_scripts_to_args(locals())
         self.pip_args = pip_args.format(**os.environ)
 
         if not name:

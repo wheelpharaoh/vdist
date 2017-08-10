@@ -236,6 +236,7 @@ def _generate_rpm_from_git_setup_compile(centos_version):
         vdist_launcher = "/opt/vdist/bin/vdist"
         assert vdist_launcher in file_list
 
+
 def test_generate_rpm_from_git_setup_compile_centos6():
     _generate_rpm_from_git_setup_compile("centos6")
 
