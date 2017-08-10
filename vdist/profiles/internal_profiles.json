@@ -1,6 +1,6 @@
 {
     "centos7": {
-        "docker_image": "centos:centos7",
+        "docker_image": "dantesignal31/vdist:centos7",
         "script": "centos.sh"
     },
     "centos6": {

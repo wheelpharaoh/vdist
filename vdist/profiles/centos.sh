@@ -5,24 +5,10 @@ PYTHON_BASEDIR="{{python_basedir}}"
 # Fail on error.
 set -e
 
-# Install general prerequisites.
-yum -y update
-yum install -y ruby-devel curl libyaml-devel which tar rpm-build rubygems git python-setuptools zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel epel-release
-yum -y install python34
-curl -O https://bootstrap.pypa.io/get-pip.py
-/usr/bin/python3 get-pip.py
-yum groupinstall -y "Development Tools"
-
 # Install build dependencies.
 {% if build_deps %}
 yum install -y {{build_deps|join(' ')}}
 {% endif %}
-
-# Only install when needed, to save time with
-# pre-provisioned containers.
-if [ ! -f /usr/bin/fpm ]; then
-    gem install fpm
-fi
 
 # Install prerequisites
 ## TODO: Try to comment this. I think we don't need it any longer.
