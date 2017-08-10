@@ -116,7 +116,7 @@ def test_generate_deb_from_git():
                               "version": '1.0',
                               "source": git(
                                   uri='https://github.com/objectified/vdist',
-                                  branch='master'
+                                  branch='vdist_tests'
                               ),
                               "profile": 'ubuntu-trusty',
                               "output_folder": output_dir}
@@ -129,7 +129,7 @@ def _generate_rpm_from_git(centos_version):
                               "version": '1.0',
                               "source": git(
                                   uri='https://github.com/objectified/vdist',
-                                  branch='master'
+                                  branch='vdist_tests'
                               ),
                               "profile": centos_version,
                               "output_folder": output_dir}
@@ -498,7 +498,7 @@ def test_generate_deb_from_git_suffixed():
                               "version": '1.0',
                               "source": git(
                                 uri='https://github.com/objectified/vdist.git',
-                                branch='master'
+                                branch='vdist_tests'
                               ),
                               "profile": 'ubuntu-trusty',
                               "output_folder": output_dir}
@@ -511,7 +511,7 @@ def _generate_rpm_from_git_suffixed(centos_version):
                               "version": '1.0',
                               "source": git(
                                 uri='https://github.com/objectified/vdist.git',
-                                branch='master'
+                                branch='vdist_tests'
                               ),
                               "profile": centos_version,
                               "output_folder": output_dir}
@@ -537,7 +537,7 @@ def test_generate_deb_from_git_directory():
         builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
                               "version": '1.0',
                               "source": git_directory(path=temp_dir,
-                                                      branch='master'),
+                                                      branch='vdist_tests'),
                               "profile": 'ubuntu-trusty',
                               "output_folder": output_dir}
         _ = _generate_deb(builder_parameters)
@@ -554,7 +554,7 @@ def _generate_rpm_from_git_directory(centos_version):
         builder_parameters = {"app": 'vdist-test-generate-deb-from-git-dir',
                               "version": '1.0',
                               "source": git_directory(path=temp_dir,
-                                                      branch='master'),
+                                                      branch='vdist_tests'),
                               "profile": centos_version,
                               "output_folder": output_dir}
         _ = _generate_rpm(builder_parameters, centos_version)
