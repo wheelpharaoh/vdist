@@ -3,6 +3,7 @@ Using vdist out of the box would work fine if your context isn't all too
 demanding. When your demands are slightly higher (such as build speeds,
 continuous builds, etc.), I'd recommend getting a few things into place which
 can be used effectively in conjunction with vdist:
+
 - an internal Docker registry; it's easy to set up (through using Docker)
 
 - a private PyPI repository such as pypiserver or devpi;
