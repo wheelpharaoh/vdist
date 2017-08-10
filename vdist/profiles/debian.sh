@@ -2,18 +2,8 @@
 PYTHON_VERSION="{{python_version}}"
 PYTHON_BASEDIR="{{python_basedir}}"
 
-# Fail on error.
+## Fail on error.
 set -e
-
-# Install general prerequisites.
-apt-get update
-apt-get install ruby-dev build-essential git python-virtualenv curl libssl-dev libsqlite3-dev libgdbm-dev libreadline-dev libbz2-dev libncurses5-dev tk-dev python3 python3-pip -y
-
-# Only install when needed, to save time with
-# pre-provisioned containers.
-if [ ! -f /usr/bin/fpm ]; then
-    gem install fpm
-fi
 
 {% if build_deps %}
 # Install build dependencies.

@@ -8,7 +8,7 @@
         "script": "centos6.sh"
     },
     "ubuntu-trusty": {
-        "docker_image": "ubuntu:trusty",
+        "docker_image": "dantesignal31/vdist:ubuntu-trusty",
         "script": "debian.sh"
     },
     "debian-wheezy": {
