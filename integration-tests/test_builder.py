@@ -74,15 +74,16 @@ def _call_builder(builder_parameters):
 
 def _generate_rpm(builder_parameters, centos_version):
     _call_builder(builder_parameters)
-    homedir = os.path.expanduser('~')
-    filename_prefix = "-".join([builder_parameters["app"],
-                                builder_parameters["version"]])
+    # homedir = os.path.expanduser('~')
+    rpm_filename_prefix = "-".join([builder_parameters["app"],
+                                    builder_parameters["version"]])
     target_file = os.path.join(
-        homedir,
-        '.vdist',
-        'dist',
-        "".join([filename_prefix, "-{0}".format(centos_version)]),
-        "".join([filename_prefix, '-1.x86_64.rpm']),
+        # homedir,
+        # '.vdist',
+        # 'dist',
+        # "".join([filename_prefix, "-{0}".format(centos_version)]),
+        builder_parameters["output_folder"],
+        "".join([rpm_filename_prefix, '-1.x86_64.rpm']),
     )
     assert os.path.isfile(target_file)
     assert os.path.getsize(target_file) > 0
@@ -115,7 +116,7 @@ def test_generate_deb_from_git():
         builder_parameters = {"app": 'vdist-test-generate-deb-from-git',
                               "version": '1.0',
                               "source": git(
-                                  uri='https://github.com/objectified/vdist',
+                                  uri='https://github.com/dante-signal31/vdist',
                                   branch='vdist_tests'
                               ),
                               "profile": 'ubuntu-trusty',
@@ -128,7 +129,7 @@ def _generate_rpm_from_git(centos_version):
         builder_parameters = {"app": 'vdist-test-generate-rpm-from-git',
                               "version": '1.0',
                               "source": git(
-                                  uri='https://github.com/objectified/vdist',
+                                  uri='https://github.com/dante-signal31/vdist',
                                   branch='vdist_tests'
                               ),
                               "profile": centos_version,
@@ -168,7 +169,7 @@ def _get_copied_script_path(_configuration):
 # 4.- Project not containing a setup.py and using a prebuilt Python package ->
 #     package both the project dir and the Python basedir
 # More info at:
-#   https://github.com/objectified/vdist/pull/7#issuecomment-177818848
+#   https://github.com/dante-signal31/vdist/pull/7#issuecomment-177818848
 
 
 # Scenario 1 - Project containing a setup.py and compiles Python -> only package
@@ -497,7 +498,7 @@ def test_generate_deb_from_git_suffixed():
         builder_parameters = {"app": 'vdist-test-generate-deb-from-git-suffixed',
                               "version": '1.0',
                               "source": git(
-                                uri='https://github.com/objectified/vdist.git',
+                                uri='https://github.com/dante-signal31/vdist.git',
                                 branch='vdist_tests'
                               ),
                               "profile": 'ubuntu-trusty',
@@ -510,7 +511,7 @@ def _generate_rpm_from_git_suffixed(centos_version):
         builder_parameters = {"app": 'vdist-test-generate-deb-from-git-suffixed',
                               "version": '1.0',
                               "source": git(
-                                uri='https://github.com/objectified/vdist.git',
+                                uri='https://github.com/dante-signal31/vdist.git',
                                 branch='vdist_tests'
                               ),
                               "profile": centos_version,
@@ -530,7 +531,7 @@ def test_generate_deb_from_git_directory():
     with temporary_directory() as temp_dir, temporary_directory() as output_dir:
         git_p = subprocess.Popen(
             ['git', 'clone',
-             'https://github.com/objectified/vdist',
+             'https://github.com/dante-signal31/vdist',
              temp_dir])
         git_p.communicate()
 
@@ -547,7 +548,7 @@ def _generate_rpm_from_git_directory(centos_version):
     with temporary_directory() as temp_dir, temporary_directory() as output_dir:
         git_p = subprocess.Popen(
             ['git', 'clone',
-             'https://github.com/objectified/vdist',
+             'https://github.com/dante-signal31/vdist',
              temp_dir])
         git_p.communicate()
 
@@ -572,7 +573,7 @@ def test_generate_deb_from_directory():
     with temporary_directory() as temp_dir, temporary_directory() as output_dir:
         git_p = subprocess.Popen(
             ['git', 'clone',
-             'https://github.com/objectified/vdist',
+             'https://github.com/dante-signal31/vdist',
              temp_dir])
         git_p.communicate()
 
@@ -588,7 +589,7 @@ def _generate_rpm_from_directory(centos_version):
     with temporary_directory() as temp_dir, temporary_directory() as output_dir:
         git_p = subprocess.Popen(
             ['git', 'clone',
-             'https://github.com/objectified/vdist',
+             'https://github.com/dante-signal31/vdist',
              temp_dir])
         git_p.communicate()
 

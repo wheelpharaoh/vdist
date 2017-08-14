@@ -135,7 +135,7 @@ if $setup; then
     {% else %}
         fpm -s dir -t rpm -n {{app}} -p {{package_tmp_root}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} $PYTHON_BASEDIR
     {% endif %}
-    cp {{package_tmp_root}}/*rpm {{shared_dir}}
+    cp {{package_tmp_root}}/*rpm {{shared_dir}}/.
 # If setup==false then our application is in a different folder than our
 # portable python environment. So we package both: our application folder and
 # the one with our python package environment. In this case packager should use
@@ -149,7 +149,7 @@ else
     {% else %}
         fpm -s dir -t rpm -n {{app}} -p {{package_tmp_root}} -v {{version}} {% for dep in runtime_deps %} --depends {{dep}} {% endfor %} {{fpm_args}} {{package_install_root}}/{{project_root}} $PYTHON_BASEDIR
     {% endif %}
-    cp {{package_tmp_root}}/*rpm {{shared_dir}}
+    cp {{package_tmp_root}}/*rpm {{shared_dir}}/.
 fi
 
 chown -R {{local_uid}}:{{local_gid}} {{shared_dir}}
