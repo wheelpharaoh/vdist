@@ -1,13 +1,11 @@
 import os
 import re
 import subprocess
-import tempfile
 
 import tests.test_console_launcher as test_console
 import tests.testing_tools as testing_tools
 
 import vdist.configuration as configuration
-import vdist.defaults as defaults
 import vdist.builder as builder
 from vdist.source import git, git_directory, directory
 
@@ -65,23 +63,13 @@ def _purge_list(original_list, purgables):
 def _call_builder(builder_parameters):
     _configuration = configuration.Configuration(builder_parameters)
     builder.build_package(_configuration)
-    # _builder.add_build(_configuration)
-    # _builder.get_available_profiles()
-    # _builder.create_build_folder_tree()
-    # _builder.populate_build_folder_tree()
-    # _builder.start_build()
 
 
-def _generate_rpm(builder_parameters, centos_version):
+def _generate_rpm(builder_parameters):
     _call_builder(builder_parameters)
-    # homedir = os.path.expanduser('~')
     rpm_filename_prefix = "-".join([builder_parameters["app"],
                                     builder_parameters["version"]])
     target_file = os.path.join(
-        # homedir,
-        # '.vdist',
-        # 'dist',
-        # "".join([filename_prefix, "-{0}".format(centos_version)]),
         builder_parameters["output_folder"],
         "".join([rpm_filename_prefix, '-1.x86_64.rpm']),
     )
@@ -92,13 +80,9 @@ def _generate_rpm(builder_parameters, centos_version):
 
 def _generate_deb(builder_parameters):
     _call_builder(builder_parameters)
-    # build_dir = defaults.BUILD_BASEDIR
-    # filename_prefix = "-".join([builder_parameters["app"],
-    #                             builder_parameters["version"]])
     deb_filename_prefix = "_".join([builder_parameters["app"],
                                     builder_parameters["version"]])
     target_file = os.path.join(builder_parameters["output_folder"],
-                               # "".join([filename_prefix, "-ubuntu-trusty"]),
                                "".join([deb_filename_prefix, '_amd64.deb']))
     assert os.path.isfile(target_file)
     assert os.path.getsize(target_file) > 0
@@ -134,7 +118,7 @@ def _generate_rpm_from_git(centos_version):
                               ),
                               "profile": centos_version,
                               "output_folder": output_dir}
-        _ = _generate_rpm(builder_parameters, centos_version)
+        _ = _generate_rpm(builder_parameters)
 
 
 def test_generate_rpm_from_git_centos6():
@@ -227,7 +211,7 @@ def _generate_rpm_from_git_setup_compile(centos_version):
             "after_remove": 'packaging/postuninst.sh',
             "output_folder": output_dir
         }
-        target_file = _generate_rpm(builder_parameters, centos_version)
+        target_file = _generate_rpm(builder_parameters)
         file_list = _read_rpm_contents(target_file)
         # At this point only a folder should remain if everything is correct.
         correct_install_path = "/opt/vdist"
@@ -291,7 +275,7 @@ def _generate_rpm_from_git_nosetup_compile(centos_version):
                               "compile_python": True,
                               "python_version": '3.4.4',
                               "output_folder": output_dir}
-        target_file = _generate_rpm(builder_parameters, centos_version)
+        target_file = _generate_rpm(builder_parameters)
         file_list = _read_rpm_contents(target_file)
         # At this point only two folders should remain if everything is correct:
         # application folder and compiled interpreter folder.
@@ -386,7 +370,7 @@ def _generate_rpm_from_git_setup_nocompile(centos_version):
             "after_remove": 'packaging/postuninst.sh',
             "output_folder": output_dir
         }
-        target_file = _generate_rpm(builder_parameters, centos_version)
+        target_file = _generate_rpm(builder_parameters)
         file_list = _read_rpm_contents(target_file)
         # At this point only a folder should remain if everything is correct.
         correct_install_path = "/usr"
@@ -466,7 +450,7 @@ def _generate_rpm_from_git_nosetup_nocompile(centos_version):
             "python_basedir": '/usr',
             "output_folder": output_dir
         }
-        target_file = _generate_rpm(builder_parameters, centos_version)
+        target_file = _generate_rpm(builder_parameters)
         file_list = _read_rpm_contents(target_file)
         # At this point only two folders should remain if everything is correct:
         # application folder and python basedir folder.
@@ -516,7 +500,7 @@ def _generate_rpm_from_git_suffixed(centos_version):
                               ),
                               "profile": centos_version,
                               "output_folder": output_dir}
-        _ = _generate_rpm(builder_parameters, centos_version)
+        _ = _generate_rpm(builder_parameters)
 
 
 def test_generate_rpm_from_git_suffixed_centos6():
@@ -558,7 +542,7 @@ def _generate_rpm_from_git_directory(centos_version):
                                                       branch='vdist_tests'),
                               "profile": centos_version,
                               "output_folder": output_dir}
-        _ = _generate_rpm(builder_parameters, centos_version)
+        _ = _generate_rpm(builder_parameters)
 
 
 def test_generate_rpm_from_git_directory_centos6():
@@ -598,7 +582,7 @@ def _generate_rpm_from_directory(centos_version):
                               "source": directory(path=temp_dir, ),
                               "profile": centos_version,
                               "output_folder": output_dir}
-        _ = _generate_rpm(builder_parameters, centos_version)
+        _ = _generate_rpm(builder_parameters)
 
 
 def test_generate_rpm_from_directory_centos6():

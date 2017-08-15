@@ -5,7 +5,6 @@ import os
 import shutil
 import re
 import json
-# import threading
 
 import sys
 from jinja2 import Environment, FileSystemLoader
@@ -38,29 +37,12 @@ def _generate_builder(_configuration):
     return builder
 
 
-# def _copy_output_script(_configuration,
-#                         source_folder=defaults.BUILD_BASEDIR):
-#     script_output_filepath = _get_script_output_filename(_configuration)
-#     package_folder = _get_generated_package_folder(_configuration,
-#                                                    source_folder)
-#     script_filepath = os.path.join(package_folder,
-#                                    defaults.SCRATCH_DIR,
-#                                    defaults.SCRATCH_BUILDSCRIPT_NAME)
-#     shutil.copy(script_filepath, script_output_filepath)
-
-## TODO: Possibly redundant with already existing code. REFACTOR
+# TODO: Possibly redundant with already existing code. REFACTOR
 def _get_script_output_filename(_configuration):
     script_filename = "{0}.sh".format(_get_package_folder_name(_configuration))
     output_filepath = os.path.join(_configuration.output_folder,
                                    script_filename)
     return output_filepath
-
-
-# def _move_package_to_output_folder(_configuration,
-#                                    source_folder=defaults.BUILD_BASEDIR):
-#     package_folder = _get_generated_package_folder(_configuration,
-#                                                    source_folder)
-#     _move_generated_packages(_configuration, package_folder)
 
 
 def _move_generated_package(_configuration, package_folder):
@@ -87,7 +69,8 @@ def _create_folder(_configuration):
     else:
         os.makedirs(_configuration.output_folder)
 
-## TODO: Possibly redundant with already existing code. REFACTOR
+
+# TODO: Possibly redundant with already existing code. REFACTOR
 def _get_package_folder_name(_configuration):
     package_folder = "{app}-{version}-{profile}".format(**_configuration.builder_parameters)
     return package_folder
@@ -179,7 +162,6 @@ class Build(object):
         self.profile = profile
         # I don't like method chaining but I didn't get it to work with a
         # auxiliary variable.
-        # self.fpm_args = self._append_scripts_to_args(locals()).format(**os.environ)
         self.fpm_args = self._append_scripts_to_args(locals())
         self.pip_args = pip_args.format(**os.environ)
 
@@ -260,7 +242,7 @@ class Builder(object):
     def add_build(self, **kwargs):
         self.build = Build(**kwargs)
 
-    ## TODO: Possibly redundant with already existing code. REFACTOR
+    # TODO: Possibly redundant with already existing code. REFACTOR
     def _create_vdist_dir(self):
         vdist_path = os.path.join(os.path.expanduser('~'), '.vdist')
         if not os.path.exists(vdist_path):
@@ -310,11 +292,6 @@ class Builder(object):
         template_name = profile.script
         template = env.get_template(template_name)
 
-        # scratch_dir = os.path.join(
-        #     defaults.SHARED_DIR,
-        #     defaults.SCRATCH_DIR
-        # )
-
         # local uid and gid are needed to correctly set permissions
         # on the created artifacts after the build completes
         return template.render(
@@ -322,8 +299,7 @@ class Builder(object):
             local_gid=os.getgid(),
             project_root=build.get_project_root_from_source(),
             shared_dir=defaults.SHARED_DIR,
-            scratch_folder_name = defaults.SCRATCH_DIR,
-            # scratch_dir=scratch_dir,
+            scratch_folder_name=defaults.SCRATCH_DIR,
             **build.__dict__
         )
 
@@ -380,15 +356,10 @@ class Builder(object):
         scratch_dir = os.path.join(build_dir, defaults.SCRATCH_DIR)
         os.mkdir(scratch_dir)
 
-        # # write necessary stuff to scratch_dir
-        # self._populate_scratch_dir(scratch_dir, build)
-
         return build_dir, scratch_dir
 
     def run_build(self):
         profile = self.profiles[self.build.profile]
-
-        # build_dir = self._create_build_dir(build)
 
         self.logger.info('launching docker image: %s' % profile.docker_image)
 
@@ -413,27 +384,9 @@ class Builder(object):
 
     def start_build(self):
         self._create_vdist_dir()
-        # self._load_profiles()
-        # self._start_build_basedir()
-
         if self.build is None:
             raise NoBuildsFoundException()
-
         self.run_build()
-        # threads = []
-        #
-        # for build in self.builds:
-        #     ## TODO: Try if there's any improvement using multiprocessing.
-        #     t = threading.Thread(
-        #         name=build.name,
-        #         target=self.run_build,
-        #         args=(build,)
-        #     )
-        #     threads.append(t)
-        #     t.start()
-        #
-        # for t in threads:
-        #     t.join()
 
     def populate_build_folder_tree(self):
         self._populate_scratch_dir(self.build)
@@ -459,8 +412,6 @@ class Builder(object):
         shutil.copy(script_filepath, script_output_filepath)
 
     def move_package_to_output_folder(self, _configuration):
-        # package_folder = _get_generated_package_folder(_configuration,
-        #                                                self.build.build_tmp_dir)
         _move_generated_package(_configuration, self.build.build_tmp_dir)
 
 
