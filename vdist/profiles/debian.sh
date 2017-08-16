@@ -13,9 +13,6 @@ apt-get install -y {{build_deps|join(' ')}}
 {% if compile_python %}
 # Download and compile what is going to be the Python we are going to use
 # as our portable python environment.
-    apt-get build-dep python -y
-    apt-get install libssl-dev -y
-
     cd /var/tmp
     curl -O https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz
     tar xzvf Python-$PYTHON_VERSION.tgz
