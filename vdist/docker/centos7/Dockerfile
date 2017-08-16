@@ -7,4 +7,6 @@ RUN yum -y install python34
 RUN curl -O https://bootstrap.pypa.io/get-pip.py
 RUN /usr/bin/python3 get-pip.py
 RUN yum groupinstall -y "Development Tools"
+# Preload useful dependencies to compile python distributions.
+RUN yum-builddep python27 python34 -y
 RUN gem install fpm

@@ -11,6 +11,8 @@ RUN yum install -y https://centos6.iuscommunity.org/ius-release.rpm
 RUN yum install -y python35u python35u-pip
 RUN ln -s /usr/bin/python3.5 /usr/bin/python3
 RUN ln -s /usr/bin/pip3.5 /usr/bin/pip3
+# Preload useful dependencies to compile python distributions.
+RUN yum-builddep python27 python35u -y
 # Latest fpm fails to install in Centos 6.
 #
 # gem install fpm
