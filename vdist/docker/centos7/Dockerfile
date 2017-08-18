@@ -9,7 +9,6 @@ RUN yum install -y ruby-devel curl libyaml-devel which tar rpm-build rubygems gi
 # Python 3 RPM installation to get basic support in that Python version.
 # Idea taken from: http://stackoverflow.com/questions/8087184/problems-installing-python3-on-rhel
 # and: http://www.codeghar.com/blog/install-latest-python-on-centos-7.html
-http://www.codeghar.com/blog/install-latest-python-on-centos-7.html
 RUN yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 RUN yum install -y python35u python35u-pip
 RUN ln -s /usr/bin/python3.5 /usr/bin/python3
