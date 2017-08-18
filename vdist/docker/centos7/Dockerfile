@@ -14,6 +14,6 @@ RUN yum install -y python35u python35u-pip
 RUN ln -s /usr/bin/python3.5 /usr/bin/python3
 RUN ln -s /usr/bin/pip3.5 /usr/bin/pip3
 # Preload useful dependencies to compile python distributions.
-RUN yum-builddep python27 python35u -y
+RUN yum-builddep python python35u -y
 # FPM installation to bundle app built directories into a system package file.
 RUN gem install fpm
