@@ -1,6 +1,8 @@
 FROM centos:centos6
 MAINTAINER dante-signal31 (dante.signal31@gmail.com)
+# Abort on error.
 RUN set -e
+# Install build tools.
 RUN yum -y update
 RUN yum groupinstall -y "Development Tools"
 RUN yum install -y ruby-devel curl libyaml-devel which tar rpm-build rubygems git python-setuptools zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc gcc-c++
@@ -13,6 +15,7 @@ RUN ln -s /usr/bin/python3.5 /usr/bin/python3
 RUN ln -s /usr/bin/pip3.5 /usr/bin/pip3
 # Preload useful dependencies to compile python distributions.
 RUN yum-builddep python27 python35u -y
+# FPM installation to bundle app built directories into a system package file.
 # Latest fpm fails to install in Centos 6.
 #
 # gem install fpm
