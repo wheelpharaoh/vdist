@@ -130,10 +130,14 @@ def test_generate_rpm_from_git_centos7():
 
 
 def test_output_script():
-    _configuration = configuration.Configuration(test_console.UBUNTU_ARGPARSED_ARGUMENTS_OUTPUT_SCRIPT)
-    builder.build_package(_configuration)
-    copied_script_path = _get_copied_script_path(_configuration)
-    assert os.path.isfile(copied_script_path)
+    with temporary_directory() as output_dir:
+        ubuntu_argparsed_arguments_output_script = test_console.UBUNTU_ARGPARSED_ARGUMENTS.copy()
+        ubuntu_argparsed_arguments_output_script["output_script"] = True
+        ubuntu_argparsed_arguments_output_script["output_folder"] = output_dir
+        _configuration = configuration.Configuration(ubuntu_argparsed_arguments_output_script)
+        builder.build_package(_configuration)
+        copied_script_path = _get_copied_script_path(_configuration)
+        assert os.path.isfile(copied_script_path)
 
 
 def _get_copied_script_path(_configuration):
