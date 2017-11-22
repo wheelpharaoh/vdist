@@ -23,6 +23,7 @@ apt-get install -y {{build_deps|join(' ')}}
 {% if compile_python %}
 # Download and compile what is going to be the Python we are going to use
 # as our portable python environment.
+    echo "deb-src http://archive.ubuntu.com/ubuntu/ xenial main restricted" >> /etc/apt/sources.list
     apt-get build-dep python -y
     apt-get install libssl-dev -y
 
